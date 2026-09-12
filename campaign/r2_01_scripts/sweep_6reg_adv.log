@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/munich/Desktop/数学/front184/campaign/r2_01_scripts/sweep_6reg.py", line 208, in <module>
+    sec_adversarial(int(sys.argv[2]) if len(sys.argv) > 2 else 5)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/munich/Desktop/数学/front184/campaign/r2_01_scripts/sweep_6reg.py", line 179, in sec_adversarial
+    info = adversarial(n, B_adj, f"adv_s{s}#{bi}")
+  File "/Users/munich/Desktop/数学/front184/campaign/r2_01_scripts/sweep_6reg.py", line 167, in adversarial
+    assert all(len(adj[v]) == 6 for v in range(n)), "对抗图应 6-正则"
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 对抗图应 6-正则

@@ -1,0 +1,14 @@
+[n=8] K8-PM: pieces=4 <= 7 ok, route=A(first factor non-triangular)
+[n=8] K8-PM: exact ce = 3
+  [n=9] 已测 5000 个去重标记图  4s
+  [n=9] 已测 10000 个去重标记图  7s
+  [n=9] 已测 15000 个去重标记图  9s
+  [n=9] 已测 20000 个去重标记图  11s
+  [n=9] 已测 25000 个去重标记图  12s
+  [n=9] 已测 30000 个去重标记图  14s
+[n=9] 全部 30016 个标记 6-正则图通过流水线 (pieces <= n-1 = 8)
+  类 complement(2-factor=(3, 3, 3)): 280 个标记图, 流水线 pieces=6, exact ce=3
+  类 complement(2-factor=(3, 6)): 5040 个标记图, 流水线 pieces=6, exact ce=3
+  类 complement(2-factor=(4, 5)): 4536 个标记图, 流水线 pieces=5, exact ce=3
+  类 complement(2-factor=(9,)): 20160 个标记图, 流水线 pieces=5, exact ce=3
+[n=9] 耗时 15s
