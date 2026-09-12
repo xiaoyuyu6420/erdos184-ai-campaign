@@ -1,0 +1,11 @@
+selftests OK
+level n=1: attempts=1 graphs=1 (0.0s)
+level n=2: attempts=2 graphs=2 (0.1s)
+level n=3: attempts=8 graphs=4 (0.1s)
+level n=4: attempts=32 graphs=11 (0.1s)
+level n=5: attempts=165 graphs=33 (0.1s)
+level n=6: attempts=858 graphs=148 (0.1s)
+level n=7: attempts=6216 graphs=950 (0.2s)
+level n=8: attempts=60800 graphs=10433 (0.5s)
+level n=9: attempts=970269 graphs=198193 (5.2s)
+FATAL: dtab full

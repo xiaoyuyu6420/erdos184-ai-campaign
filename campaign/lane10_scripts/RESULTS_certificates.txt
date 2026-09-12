@@ -1,0 +1,48 @@
+========================================================================
+CERTIFICATES v2: explicit greedy runs (independently re-verified)
+========================================================================
+
+[C2] K_8: peel the 2 cross Ham cycles of K_{4,4} (parts {0..3},{4..7}),
+     remainder = K_4 u K_4, then triangles:  2 + 3 + 3 = 8 pieces  (n=8, ce=7)
+   peel length 8: ok, remaining edges 20
+   peel length 8: ok, remaining edges 12
+   peel length 4: ok, remaining edges 8
+   peel length 4: ok, remaining edges 4
+   pieces = 4 + leftover 4 = 8
+   RESULT: ok=True, total pieces = 8  (claim: W(K_8) >= 8 = n > 7 = n-1 = ce)
+
+[C3] K_{2^k} recursion: cross K_{2^{k-1},2^{k-1}} = 2^{k-2} Ham cycles,
+     then recurse on the two K_{2^{k-1}} blocks.  pieces(2^k) = 2^{k-2} + 2 pieces(2^{k-1}).
+   K_8: 4 cycles + 4 singles, ok=True, pieces=8, formula N(k+1)/4 = 8, match=True
+   K_16: 12 cycles + 8 singles, ok=True, pieces=20, formula N(k+1)/4 = 20, match=True
+   K_32: 32 cycles + 16 singles, ok=True, pieces=48, formula N(k+1)/4 = 48, match=True
+   K_64: 80 cycles + 32 singles, ok=True, pieces=112, formula N(k+1)/4 = 112, match=True
+   => W(K_{2^k}) >= 2^k (k+1)/4  i.e.  (1/(4 ln2)) n ln n (1+o(1)) = 0.3607 n ln n
+
+[C4] K_{3,4}: circumference 6; after ANY 6-cycle remainder is a forest:
+     every greedy run = 1 cycle + 6 singles = 7 pieces  (n=7, ce=6=n-1)
+   #6-cycles contained in K_{3,4}: 24; all leave forests: True; 7-cycle exists: False
+   certificate run ok=True: pieces = 7  (forced for every tie-break)
+
+[C5] sun(4) = K_3 v I_4 = K_3 u K_{3,4} (edge-union on shared 3-part), n=7:
+     6-cycle forced; then 4-cycle forced (join creates 4-cycles a,a',b,b'');
+     then forest.  pieces = 1+1+5 = 7 = n.  ce(sun4) computed exactly elsewhere.
+   peel length 6: ok, remaining edges 9
+   peel length 4: ok, remaining edges 5
+   pieces = 2 + leftover 5 = 7
+   #6-cycles: 24; every 6-cycle leaves a >=4-cycle: True; every (6C,4C) pair leaves forest: True
+
+[C6] Amplifier: g disjoint copies of K_16 -> W = 20g, ce(K_16)=15 => ce = 15g,
+     n = 16g:  greedy = 1.25 n > n,  gap = 20g - 15g = 5g = n/3.2 = Theta(n)
+   g=2: n=32, ok=True, greedy pieces=40 = 1.250n, ce=30 (block additivity), gap=10 = 0.312n
+   g=3: n=48, ok=True, greedy pieces=60 = 1.250n, ce=45 (block additivity), gap=15 = 0.312n
+
+[C7] K_{2k+1,2k+2}: k edge-disjoint 4k+2-cycles (matching pairs M_0uM_1,...)
+     drain the fixed (2k+1)-set of big vertices to degree 1; smalls to degree 2;
+     only one fresh big remains -> forest.  pieces = k + 4k+2 = 5k+2.
+   k=1: n=7, m=12, ok=True, pieces=7 vs 5k+2=7: True
+   k=2: n=11, m=30, ok=True, pieces=12 vs 5k+2=12: True
+   k=3: n=15, m=56, ok=True, pieces=17 vs 5k+2=17: True
+
+[C8] K_7 (odd): friendly = 3 edge-disjoint Ham cycles = 3 pieces = ce(K_7).
+   ok=True, pieces=3

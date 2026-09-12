@@ -1,0 +1,138 @@
+\begin{thebibliography}{10}
+
+\bibitem{abreu2004graphs}
+M.~Abreu, R.~E. Aldred, M.~Funk, B.~Jackson, D.~Labbate, and J.~Sheehan.
+\newblock Graphs and digraphs with all 2-factors isomorphic.
+\newblock {\em Journal of Combinatorial Theory, Series B}, 92(2):395--404, 2004.
+
+\bibitem{bonamy2019gallai}
+M.~Bonamy and T.~J. Perrett.
+\newblock Gallai’s path decomposition conjecture for graphs of small maximum degree.
+\newblock {\em Discrete Mathematics}, 342(5):1293--1299, 2019.
+
+\bibitem{bondy1990small}
+J.~A. Bondy.
+\newblock Small cycle double covers of graphs.
+\newblock In {\em Cycles and rays}, pages 21--40. Springer, 1990.
+
+\bibitem{bondy1976graph}
+J.~A. Bondy, U.~S.~R. Murty, et~al.
+\newblock {\em Graph Theory with Applications}, volume 290.
+\newblock Macmillan London, 1976.
+
+\bibitem{botler2017path}
+F.~Botler and A.~Jim{\'e}nez.
+\newblock On path decompositions of $2k$-regular graphs.
+\newblock {\em Discrete Mathematics}, 340(6):1405--1411, 2017.
+
+\bibitem{bucic2023towards}
+M.~Buci{\'c} and R.~Montgomery.
+\newblock Towards the erd{\H{o}}s-gallai cycle decomposition conjecture.
+\newblock In {\em Proceedings of the 55th Annual ACM Symposium on Theory of Computing}, pages 839--852, 2023.
+
+\bibitem{conlon2014cycle}
+D.~Conlon, J.~Fox, and B.~Sudakov.
+\newblock Cycle packing.
+\newblock {\em Random Structures \& Algorithms}, 45(4):608--626, 2014.
+
+\bibitem{dor1997graph}
+D.~Dor and M.~Tarsi.
+\newblock Graph decomposition is \uppercase{NP}-complete: A complete proof of \uppercase{H}olyer's conjecture.
+\newblock {\em SIAM Journal on Computing}, 26(4):1166--1187, 1997.
+
+\bibitem{erdos1971some}
+P.~Erd{\H{o}}s.
+\newblock Some unsolved problems in graph theory and combinatorial analysis.
+\newblock In {\em Combinatorial Mathematics and its Applications (Proc. Conf., Oxford, 1969)}, pages 97--109, 1971.
+
+\bibitem{erdos1973problems}
+P.~Erd{\H{o}}s.
+\newblock Problems and results in combinatorial analysis.
+\newblock In {\em Colloq. Internat. Theor. Combin. Rome}, pages 3--17, 1973.
+
+\bibitem{erdHos1981combinatorial}
+P.~Erd{\H{o}}s.
+\newblock On the combinatorial problems which i would most like to see solved.
+\newblock {\em Combinatorica}, 1(1):25--42, 1981.
+
+\bibitem{erdHos1983some}
+P.~Erd{\H{o}}s.
+\newblock On some of my conjectures in number theory and combinatorics.
+\newblock In {\em Proceedings of the fourteenth Southeastern conference on combinatorics, graph theory and computing}, volume~39, page~11, 1983.
+
+\bibitem{erdos1966representation}
+P.~Erd{\H{o}}s, A.~W. Goodman, and L.~P{\'o}sa.
+\newblock The representation of a graph by set intersections.
+\newblock {\em Canadian Journal of Mathematics}, 18:106--112, 1966.
+
+\bibitem{fan2003covers}
+G.~Fan.
+\newblock Covers of \uppercase{E}ulerian graphs.
+\newblock {\em Journal of Combinatorial Theory, Series B}, 89(2):173--187, 2003.
+
+\bibitem{fan2005path}
+G.~Fan.
+\newblock Path decompositions and \uppercase{G}allai's conjecture.
+\newblock {\em Journal of Combinatorial Theory, Series B}, 93(2):117--125, 2005.
+
+\bibitem{favaron1988path}
+O.~Favaron and M.~Kouider.
+\newblock {\em Path partitions and cycle partitions of Eulerian graphs of maximum degree 4}.
+\newblock Universit{\'e} de Paris-Sud. Centre d'Orsay. Laboratoire de Recherche en Informatique, 1988.
+
+\bibitem{geng2015gallai}
+X.~Geng, M.~Fang, and D.~Li.
+\newblock Gallai's conjecture for outerplanar graphs.
+\newblock {\em Journal of Interdisciplinary Mathematics}, 18(5):593--598, 2015.
+
+\bibitem{girao2021path}
+A.~Gir{\~a}o, B.~Granet, D.~K{\"u}hn, and D.~Osthus.
+\newblock Path and cycle decompositions of dense graphs.
+\newblock {\em Journal of the London Mathematical Society}, 104(3):1085--1134, 2021.
+
+\bibitem{glock2016optimal}
+S.~Glock, D.~K{\"u}hn, and D.~Osthus.
+\newblock Optimal path and cycle decompositions of dense quasirandom graphs.
+\newblock {\em Journal of Combinatorial Theory, Series B}, 118:88--108, 2016.
+
+\bibitem{jimenez2017path}
+A.~Jim{\'e}nez and Y.~Wakabayashi.
+\newblock On path-cycle decompositions of triangle-free graphs.
+\newblock {\em Discrete Mathematics \& Theoretical Computer Science}, 19(Graph Theory), 2017.
+
+\bibitem{korandi2015decomposing}
+D.~Kor{\'a}ndi, M.~Krivelevich, and B.~Sudakov.
+\newblock Decomposing random graphs into few cycles and edges.
+\newblock {\em Combinatorics, Probability and Computing}, 24(6):857--872, 2015.
+
+\bibitem{kottarathil2024graph}
+J.~Kottarathil, S.~Naduvath, and J.~V. Kureethara.
+\newblock {\em Graph Theory and Decomposition}.
+\newblock Chapman and Hall/CRC, 2024.
+
+\bibitem{lovasz1968covering}
+L.~Lov\'asz.
+\newblock {On covering of graphs}.
+\newblock {\em Theory of Graphs (Proc. Colloq., Tihany, 1966)}, pages 231--236, 1968.
+
+\bibitem{pyber1985erdHos}
+L.~Pyber.
+\newblock An {E}rd{\H{o}}s—{G}allai conjecture.
+\newblock {\em Combinatorica}, 5(1):67--79, 1985.
+
+\bibitem{pyber1991covering}
+L.~Pyber.
+\newblock Covering the edges of a graph by\dots.
+\newblock In {\em Sets, Graphs and Numbers, Colloquia Mathematica Societatis J{\'a}nos Bolyai}, volume~60, pages 583--610, 1991.
+
+\bibitem{pyber1996covering}
+L.~Pyber.
+\newblock Covering the edges of a connected graph by paths.
+\newblock {\em Journal of Combinatorial Theory, Series B}, 66(1):152--159, 1996.
+
+\bibitem{west2001introduction}
+D.~B. West.
+\newblock {\em Introduction to Graph Theory}, volume~2.
+\newblock Prentice hall Upper Saddle River, 2001.
+
+\end{thebibliography}

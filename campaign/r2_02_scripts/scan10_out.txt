@@ -1,0 +1,27 @@
+== n=1 graphs=1 maxce=0 phi=0 C2=1 violations=0
+   cores=0 mixed=0 pure=0 pureminslack(r0/r1/r2)=-1/-1/-1 pureBviol=0
+   gpchecked=1 gpfail=0 tauexcess=2 taucount=1
+== n=2 graphs=2 maxce=1 phi=1 C2=2 violations=0
+   cores=0 mixed=0 pure=0 pureminslack(r0/r1/r2)=-1/-1/-1 pureBviol=0
+   gpchecked=1 gpfail=0 tauexcess=1 taucount=2
+== n=3 graphs=4 maxce=2 phi=2 C2=2 violations=0
+   cores=0 mixed=0 pure=0 pureminslack(r0/r1/r2)=-1/-1/-1 pureBviol=0
+   gpchecked=2 gpfail=0 tauexcess=0 taucount=4
+== n=4 graphs=11 maxce=3 phi=3 C2=4 violations=0
+   cores=1 mixed=1 pure=0 pureminslack(r0/r1/r2)=-1/-1/-1 pureBviol=0
+   gpchecked=7 gpfail=2 tauexcess=0 taucount=11
+== n=5 graphs=33 maxce=4 phi=4 C2=5 violations=0
+   cores=2 mixed=2 pure=0 pureminslack(r0/r1/r2)=-1/-1/-1 pureBviol=0
+   gpchecked=22 gpfail=2 tauexcess=-1 taucount=33
+== n=6 graphs=148 maxce=5 phi=6 C2=6 violations=0
+   cores=14 mixed=13 pure=1 pureminslack(r0/r1/r2)=2/-1/-1 pureBviol=0
+   gpchecked=119 gpfail=0 tauexcess=0 taucount=148
+== n=7 graphs=950 maxce=7 phi=7 C2=8 violations=0
+   cores=102 mixed=97 pure=5 pureminslack(r0/r1/r2)=-1/1/-1 pureBviol=0
+   gpchecked=870 gpfail=30 tauexcess=1 taucount=950
+== n=8 graphs=10433 maxce=8 phi=8 C2=9 violations=0
+   cores=1628 mixed=1573 pure=55 pureminslack(r0/r1/r2)=-1/-1/1 pureBviol=0
+   gpchecked=10935 gpfail=260 tauexcess=2 taucount=10433
+== n=9 graphs=198193 maxce=9 phi=10 C2=10 violations=0
+   cores=42512 mixed=41057 pure=1455 pureminslack(r0/r1/r2)=2/-1/-1 pureBviol=0
+   gpchecked=42512 gpfail=0 tauexcess=3 taucount=160308
