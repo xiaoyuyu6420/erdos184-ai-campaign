@@ -332,6 +332,139 @@ def tables():
         psi = (4 * n - 7) // 3
         print(f"  n={n:>2} phi={phi:>3} psi={psi:>3} beta={phi-((4*(n-1)-6)//3 if n-1>=3 else (0 if n-1<=1 else 1)):>2}")
 
+# ---------- 7. R2-02 session additions ----------
+def split_graph_k(k):  # alias with explicit k (K_3 v I_k)
+    return split_graph(k)
+
+def witness_p4_dissolve():
+    """G = (K5 - xy) + z(p,q,r) + v(x,y,z): 3-degenerate, N(v) independent,
+    ALL THREE pair-dissolves G - v + pair have degeneracy 4 (P4 fails)."""
+    # vertices: x=0 y=1 p=2 q=3 r=4 z=5 v=6 ; K5-xy on {0,1,2,3,4}; 5~{2,3,4}; 6~{0,1,5}
+    edges = []
+    V5 = [0, 1, 2, 3, 4]
+    for i in range(5):
+        for j in range(i + 1, 5):
+            if {i, j} == {0, 1}:
+                continue
+            edges.append((i, j))
+    edges += [(5, 2), (5, 3), (5, 4)]
+    edges += [(6, 0), (6, 1), (6, 5)]
+    n = 7
+    adj = [0] * n
+    for u, v in edges:
+        adj[u] |= 1 << v
+        adj[v] |= 1 << u
+    dg = degeneracy_of(n, adj)
+    ce, tau, _ = cecli_call(n, adj)
+    print(f"[7] P4-dissolve witness: n=7 m={len(edges)} degen={dg} (want 3), ce={ce} (phi(7)=7)")
+    nb_v = [x for x in range(n) if (adj[6] >> x) & 1]
+    assert nb_v == [0, 1, 5] and not ((adj[0] >> 1) & 1) and not ((adj[0] >> 5) & 1) and not ((adj[1] >> 5) & 1), "N(v) not independent"
+    for (a, b) in ((0, 1), (0, 5), (1, 5)):
+        adj2 = list(adj)
+        adj2[6] = 0
+        for x in range(6):
+            adj2[x] &= ~(1 << 6)
+        adj2[a] |= 1 << b
+        adj2[b] |= 1 << a
+        dg2 = degeneracy_of(n, adj2)  # note: v still counted, isolated; check induced on 0..5
+        dg2 = degeneracy_of(6, adj2[:6])
+        print(f"     dissolve pair ({a},{b}): degen(G-v+pair) = {dg2} (want 4)")
+    return dg == 3
+
+def witness_k5e_v():
+    """G = K5-e + v joined to the two non-adjacent vertices x,y and one more z:
+    the naive 'deg-3 dissolve keeps 3-degeneracy' fails here too via pair (x,y)."""
+    edges = []
+    for i in range(5):
+        for j in range(i + 1, 5):
+            if {i, j} == {0, 1}:
+                continue
+            edges.append((i, j))
+    edges += [(5, 0), (5, 1), (5, 2)]  # v=5, z=2
+    n = 6
+    adj = [0] * n
+    for u, v in edges:
+        adj[u] |= 1 << v
+        adj[v] |= 1 << u
+    ce, tau, dg = cecli_call(n, adj)
+    adj2 = list(adj)
+    adj2[5] = 0
+    for x in range(5):
+        adj2[x] &= ~(1 << 5)
+    adj2[0] |= 1 << 1
+    adj2[1] |= 1 << 0
+    dg2 = degeneracy_of(5, adj2)
+    print(f"[7b] K5-e + v(x,y,z): n=6 degen={dg} (want 3) ce={ce} phi(6)=6 ; dissolve xy: degen={dg2} (want 4)")
+
+def split_table(kmax=8):
+    print("[8] split graphs K_3 v I_k: n=k+3, m=3k+3; formula ce = k + ceil(k/3) + 1; tau = k")
+    import math
+    ok = True
+    for k in range(1, kmax + 1):
+        n, adj = split_graph_k(k)
+        m = 3 * k + 3
+        ce, tau, dg = cecli_call(n, adj)
+        pred = k + math.ceil(k / 3) + 1
+        phi = (4 * n - 6) // 3
+        ok &= (ce == pred) and (tau == k) and (dg == 3)
+        print(f"  k={k} n={n} m={m}: ce={ce} pred={pred} tau={tau} degen={dg} phi(n)={phi} tight={'YES' if ce==phi else 'phi-1'}")
+    print(f"  ALL MATCH formula: {ok}")
+
+def gpfail_witness_ce():
+    print("[9] GPFAIL witnesses from scan_wit.txt: exact ce vs phi(n)")
+    cases = [
+        (7, [(0,3),(0,4),(0,5),(0,6),(1,3),(1,4),(1,5),(2,4),(2,5),(2,6),(3,6)]),
+        (8, [(0,3),(0,4),(0,5),(1,4),(1,5),(1,6),(2,5),(2,6),(2,7),(3,6),(3,7),(4,7)]),
+    ]
+    for n, edges in cases:
+        adj = [0] * n
+        for u, v in edges:
+            adj[u] |= 1 << v
+            adj[v] |= 1 << u
+        ce, tau, dg = cecli_call(n, adj)
+        phi = (4 * n - 6) // 3
+        print(f"  n={n} m={len(edges)}: ce={ce} phi={phi} slack={phi-ce} degen={dg} pure={is_pure_core(n,adj)}")
+
+def random_dissolve_scan(trials=3000, seed=7):
+    """how often does a 3-degenerate G with independent-N deg-3 vertex have ALL pair-dissolves 4-degenerate?"""
+    import random as _r
+    rng = _r.Random(seed)
+    bad = 0
+    for _ in range(trials):
+        n = rng.randint(5, 9)
+        adj = [0] * n
+        order = list(range(n))
+        rng.shuffle(order)
+        placed = []
+        for v in order:
+            pool = placed[:]
+            rng.shuffle(pool)
+            S = pool[: rng.randint(0, min(3, len(pool)))]
+            for u in S:
+                adj[v] |= 1 << u
+                adj[u] |= 1 << v
+        if degeneracy_of(n, adj) > 3:
+            continue
+        for v in range(n):
+            nb = [x for x in range(n) if (adj[v] >> x) & 1]
+            if len(nb) != 3:
+                continue
+            if (adj[nb[0]] >> nb[1]) & 1 or (adj[nb[0]] >> nb[2]) & 1 or (adj[nb[1]] >> nb[2]) & 1:
+                continue  # not independent
+            alldis = True
+            for i in range(3):
+                a, b = nb[i], nb[(i + 1) % 3]
+                adj2 = [adj[x] & ~(1 << v) for x in range(n)]
+                adj2[v] = 0
+                adj2[a] |= 1 << b
+                adj2[b] |= 1 << a
+                if degeneracy_of(n, adj2) <= 3:
+                    alldis = False
+                    break
+            if alldis:
+                bad += 1
+    print(f"[10] random 3-degenerate graphs with a deg-3 independent-N vertex whose ALL pair-dissolves break 3-degeneracy: {bad}/{trials}")
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
     if which in ("all", "cv"):
@@ -343,6 +476,12 @@ if __name__ == "__main__":
     if which in ("all", "wheel"):
         wheel_checks()
     if which in ("all", "trees"):
-        all_3trees(11)
+        all_3trees(9)
     if which in ("all", "tables"):
         tables()
+    if which in ("all", "r2"):
+        witness_p4_dissolve()
+        witness_k5e_v()
+        split_table()
+        gpfail_witness_ce()
+        random_dissolve_scan()

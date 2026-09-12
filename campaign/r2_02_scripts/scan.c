@@ -24,8 +24,9 @@
 
 #define MAXN 12
 #define MAXM 48
-#define MEMOBITS 22
+#define MEMOBITS 24
 #define CYCCAP 65536
+#define NOCAP 1000000000
 
 typedef struct { int n, m; uint16_t adj[MAXN]; } Graph;
 
@@ -77,6 +78,7 @@ static uint32_t cycbuf[CYCCAP];
 static int cyccnt; static int cycovf;
 
 static int g_base; /* base edge id, included in every recorded cycle */
+static int g_cap = NOCAP; /* capped solving: memoized values are min(ce, g_cap) */
 
 static void dfs_cycles(int cur, int target, uint32_t mask, uint32_t visited, uint32_t pathmask){
   for(int x = 0; x < g_n; x++){
@@ -109,7 +111,8 @@ static int solve_rec(uint32_t mask){
   if(r >= 0) return r;
   int e = __builtin_ctz(mask);
   int best = 1 + solve_rec(mask & ~(1u << e));
-  if(best > 1){
+  if(best > g_cap) best = g_cap;
+  if(best < g_cap && best > 1){
     int nc = cycles_through(e, mask);
     for(int i = 1; i < nc; i++){           /* sort by length desc */
       uint32_t key = cycbuf[i]; int j = i - 1;
@@ -121,6 +124,7 @@ static int solve_rec(uint32_t mask){
       int lb = 1 + (pc32(rest) + g_Lmax - 1) / g_Lmax;
       if(lb >= best) continue;
       int val = 1 + solve_rec(rest);
+      if(val > g_cap) val = g_cap;
       if(val < best){ best = val; if(best == 1) break; }
     }
     if(cycovf){ fprintf(stderr, "FATAL: cycle cap overflow\n"); exit(3); }
@@ -172,8 +176,12 @@ static void solver_setup(const Graph *G){
       if((g_adj[u] >> v) & 1){ g_eu[e] = u; g_ev[e] = v; g_eidx[u][v] = g_eidx[v][u] = e; e++; }
   if(e != g_m){ fprintf(stderr, "FATAL: m mismatch (%d vs %d)\n", e, g_m); exit(3); }
   solver_new_graph();
-  g_Lmax = longest_cycle();
-  if(g_Lmax < 3) g_Lmax = 3;
+  if(g_cap < NOCAP){
+    g_Lmax = g_n > 3 ? g_n : 3;   /* valid upper bound; skips the 2^n DP in capped mode */
+  } else {
+    g_Lmax = longest_cycle();
+    if(g_Lmax < 3) g_Lmax = 3;
+  }
 }
 static int ce_solve(const Graph *G){
   solver_setup(G);
@@ -528,13 +536,15 @@ static long long stat_pureBviol[16];
 static long long stat_mixed[16];
 static long long stat_gp_fail[16]; static Graph stat_gp_wit[16]; static int stat_gp_witok[16];
 static long long stat_gp_checked[16];
+static long long stat_tight[16], stat_tight_core[16], stat_gpfail_tight[16];
+static long long stat_certified[16], stat_certified_pure[16];
 static int stat_tau_excess[16]; static Graph stat_tau_wit[16]; static int stat_tauwitok[16];
 static long long stat_tau_count[16];
 
 static void record_witness(int n, const Graph *G, int ce){
   if(stat_maxce_count[n] < 4){
     stat_maxce_wit[n][stat_maxce_count[n]] = *G;
-    if(stat_maxce_count[n] == 0){
+    if(stat_maxce_count[n] == 0 && g_cap == NOCAP){
       solver_setup(G);
       solve_rec((g_m >= 32) ? 0xffffffffu : ((1u << g_m) - 1));
       extract_decomp();
@@ -549,11 +559,24 @@ static void record_witness(int n, const Graph *G, int ce){
 }
 
 static void process_graph(const Graph *G, int n, int peeln, int corepeeln, int taun){
+  /* capped mode only: cheap certification. If provably ce <= phif(n)-1, the graph
+     cannot be a violation nor tight (phi); skip the exact solve. Sound because
+     ce <= m and ce <= (m+2tau)/3 (R1). */
+  if(g_cap < NOCAP){
+    int phi = phif(n);
+    if(G->m <= phi - 1){ stat_certified[n]++; if(is_pure_core(G)) stat_certified_pure[n]++; stat_count[n]++; return; }
+    int tau = tau_solve(G);
+    if(G->m + 2*tau <= 3*(phi-1)){ stat_certified[n]++; if(is_pure_core(G)) stat_certified_pure[n]++; stat_count[n]++; return; }
+  }
   int ce = ce_solve(G);
   stat_count[n]++;
   if(ce > stat_maxce[n]){ stat_maxce[n] = ce; stat_maxce_count[n] = 0; }
   if(ce == stat_maxce[n]) record_witness(n, G, ce);
   if(ce > phif(n)) stat_violations[n]++;
+  if(ce == phif(n)){
+    stat_tight[n]++;
+    if(mindeg(G) >= 3) stat_tight_core[n]++;
+  }
 
   int md = mindeg(G);
   int iscore = (md >= 3);
@@ -583,7 +606,7 @@ static void process_graph(const Graph *G, int n, int peeln, int corepeeln, int t
         if(ce - ceh <= betaf(n)) ok = 1;
       }
       if(!ok && stat_gp_fail[n] == 0){ stat_gp_wit[n] = *G; stat_gp_witok[n] = 1; }
-      if(!ok) stat_gp_fail[n]++;
+      if(!ok){ stat_gp_fail[n]++; if(ce >= phif(n)) stat_gpfail_tight[n]++; }
     }
   }
   /* good-peel for ALL connected graphs at small n */
@@ -598,7 +621,7 @@ static void process_graph(const Graph *G, int n, int peeln, int corepeeln, int t
       if(ce - ceh <= betaf(n)) ok = 1;
     }
     if(!ok && stat_gp_fail[n] == 0){ stat_gp_wit[n] = *G; stat_gp_witok[n] = 1; }
-    if(!ok) stat_gp_fail[n]++;
+    if(!ok){ stat_gp_fail[n]++; if(ce >= phif(n)) stat_gpfail_tight[n]++; }
   }
   /* tau for R1-route analysis */
   if(n <= taun || G->m >= 3*n - 12){
@@ -681,10 +704,12 @@ static void brute_validate(int n){
 /* ---------------- main ---------------- */
 #ifndef CLI
 int main(int argc, char **argv){
-  if(argc < 2){ fprintf(stderr, "usage: %s N [--brute7] [--peeln K] [--taun K] [--corepeeln K] [--maxlvl cap]\n", argv[0]); return 1; }
+  if(argc < 2){ fprintf(stderr, "usage: %s N [--brute7] [--peeln K] [--taun K] [--corepeeln K] [--maxlvl cap] [--cap C --capn N] [--wit name]\n", argv[0]); return 1; }
   int N = atoi(argv[1]);
   int peeln = 8, taun = 8, corepeeln = 10;
   int brute7 = 0;
+  int cap = NOCAP, capn = 9;
+  const char *witname = "scan_wit.txt";
   long long lvlcap = 12000000;
   for(int i = 2; i < argc; i++){
     if(!strcmp(argv[i], "--brute7")) brute7 = 1;
@@ -692,6 +717,9 @@ int main(int argc, char **argv){
     else if(!strcmp(argv[i], "--taun")) taun = atoi(argv[++i]);
     else if(!strcmp(argv[i], "--corepeeln")) corepeeln = atoi(argv[++i]);
     else if(!strcmp(argv[i], "--maxlvl")) lvlcap = atoll(argv[++i]);
+    else if(!strcmp(argv[i], "--cap")) cap = atoi(argv[++i]);
+    else if(!strcmp(argv[i], "--capn")) capn = atoi(argv[++i]);
+    else if(!strcmp(argv[i], "--wit")) witname = argv[++i];
   }
   if(N > MAXN - 2){ fprintf(stderr, "N too large\n"); return 1; }
   solver_alloc();
@@ -700,7 +728,7 @@ int main(int argc, char **argv){
   if(brute7){ for(int n = 4; n <= (N >= 7 ? 7 : N); n++) brute_validate(n); }
 
   clock_t t0 = clock();
-  FILE *witf = fopen("scan_wit.txt", "w");
+  FILE *witf = fopen(witname, "w");
 
   Level prev, cur;
   /* level 0: single empty graph */
@@ -709,7 +737,8 @@ int main(int argc, char **argv){
   prev.graphs[0] = G0; prev.count = 1;
 
   for(int n = 1; n <= N; n++){
-    dtab_init(1 << 23); dtab_clear();
+    if(n > capn) g_cap = cap; else g_cap = NOCAP;
+    dtab_init(1 << 25); dtab_clear();
     level_init(&cur, (int)lvlcap);
     stat_attempts[n] = 0;
     for(int i = 0; i < prev.count; i++){
@@ -728,18 +757,31 @@ int main(int argc, char **argv){
     double el = (double)(clock() - t0) / CLOCKS_PER_SEC;
     fprintf(stderr, "level n=%d: attempts=%lld graphs=%d (%.1fs)\n", n, stat_attempts[n], cur.count, el);
     /* process */
-    for(int i = 0; i < cur.count; i++)
-      process_graph(&cur.graphs[i], n, peeln, corepeeln, taun);
-    printf("== n=%d graphs=%d maxce=%d phi=%d C2=%d violations=%lld\n",
-           n, cur.count, stat_maxce[n], phif(n), (phif(n) + ((n % 3) ? 1 : 0)), stat_violations[n]);
+    int epeeln = (g_cap == NOCAP) ? peeln : 0;
+    int etaun  = (g_cap == NOCAP) ? taun : 0;
+    int ecorep = (g_cap == NOCAP) ? corepeeln : 0;
+    for(int i = 0; i < cur.count; i++){
+      process_graph(&cur.graphs[i], n, epeeln, ecorep, etaun);
+      if(g_cap < NOCAP && (i + 1) % 500000 == 0)
+        fprintf(stderr, "  n=%d progress %d/%d (%.1fs)\n", n, i + 1, cur.count,
+                (double)(clock() - t0) / CLOCKS_PER_SEC);
+    }
+    printf("== n=%d graphs=%d maxce=%d phi=%d C2=%d violations=%lld%s\n",
+           n, cur.count, stat_maxce[n], phif(n), (phif(n) + ((n % 3) ? 1 : 0)), stat_violations[n],
+           (g_cap == NOCAP) ? "" : " [CAPPED]");
     printf("   cores=%lld mixed=%lld pure=%lld pureminslack(r0/r1/r2)=%d/%d/%d pureBviol=%lld\n",
            stat_cores[n], stat_mixed[n], stat_pure[n],
            stat_purewitok[n][0] ? stat_pureminslack[n][0] : -1,
            stat_purewitok[n][1] ? stat_pureminslack[n][1] : -1,
            stat_purewitok[n][2] ? stat_pureminslack[n][2] : -1,
            stat_pureBviol[n]);
-    printf("   gpchecked=%lld gpfail=%lld tauexcess=%d taucount=%lld\n",
-           stat_gp_checked[n], stat_gp_fail[n], stat_tau_excess[n], stat_tau_count[n]);
+    printf("   gpchecked=%lld gpfail=%lld gpfail_tight=%lld tight=%lld tight_core=%lld tauexcess=%d taucount=%lld\n",
+           stat_gp_checked[n], stat_gp_fail[n], stat_gpfail_tight[n],
+           stat_tight[n], stat_tight_core[n], stat_tau_excess[n], stat_tau_count[n]);
+    if(g_cap < NOCAP)
+      printf("   certified(ce<=%d by m/R1)=%lld certified_pure=%lld solved=%lld\n",
+             phif(n) - 1, stat_certified[n], stat_certified_pure[n],
+             stat_count[n] - stat_certified[n]);
     fflush(stdout);
     /* witnesses to file */
     fprintf(witf, "=== n=%d maxce=%d (phi=%d) witnesses=%d\n", n, stat_maxce[n], phif(n), stat_maxce_count[n]);

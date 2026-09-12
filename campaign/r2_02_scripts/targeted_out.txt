@@ -1,0 +1,68 @@
+[1] cross-validation: 300 random 3-degenerate graphs, 0 mismatches
+[2] K_{3,q}: exact ce, tau;  m+2tau vs 4n-6 and 4n-4
+  q   n   m  ce ceil(4q/3)  tau  m+2tau  4n-6  viol?
+  2   5   6   3          3    2      10    14     no
+  3   6   9   4          4    3      15    18     no
+  4   7  12   6          6    4      20    22     no
+  5   8  15   7          7    5      25    26     no
+  6   9  18   8          8    6      30    30     no
+  7  10  21  10         10    7      35    34     +1
+  8  11  24  11         11    8      40    38     +2
+  9  12  27  12         12    9      45    42     +3
+[3] split graphs K_3 v I_k: n = k+3, m = 3k+3
+  k   n   m  ce  psi(n)  phi(n) degen pure?
+  1   4   6   3       3       3     3 False
+  2   5   9   4       4       4     3 False
+  3   6  12   5       5       6     3 False
+  4   7  15   7       7       7     3 False
+  5   8  18   8       8       8     3 False
+  6   9  21   9       9      10     3 False
+  7  10  24  11      11      11     3 False
+  8  11  27  12      12      12     3 False
+  9  12  30  13      13      14     3 False
+[4] wheel witnesses: deg-3 k=0 interior peel with Delta=3
+  C6+hub: n=7 ce=4 ce(C6)=1 Delta=3  (beta(7)=1)
+  C7+hub: n=8 ce=4 ce(C7)=1 Delta=3  (beta(8)=1)
+  C8+hub: n=9 ce=4 ce(C8)=1 Delta=3  (beta(9)=2)
+  core-wheel(C6+evens-tri+hub): n=7 ce=5 ce(G-hub)=2 Delta=3 pure=False degen=3
+[5] 3-trees n=4: count=1 max_ce=3 psi=3 phi=3 n-1=3
+[5] 3-trees n=5: count=1 max_ce=4 psi=4 phi=4 n-1=4
+[5] 3-trees n=6: count=2 max_ce=5 psi=5 phi=6 n-1=5
+[5] 3-trees n=7: count=5 max_ce=7 psi=7 phi=7 n-1=6
+[5] 3-trees n=8: count=15 max_ce=8 psi=8 phi=8 n-1=7
+[5] 3-trees n=9: count=58 max_ce=9 psi=9 phi=10 n-1=8
+[6] n: phi=floor((4n-6)/3), psi=floor((4n-7)/3), beta=phi(n)-phi(n-1)
+  n= 1 phi=  0 psi= -1 beta= 0
+  n= 2 phi=  1 psi=  0 beta= 1
+  n= 3 phi=  2 psi=  1 beta= 1
+  n= 4 phi=  3 psi=  3 beta= 1
+  n= 5 phi=  4 psi=  4 beta= 1
+  n= 6 phi=  6 psi=  5 beta= 2
+  n= 7 phi=  7 psi=  7 beta= 1
+  n= 8 phi=  8 psi=  8 beta= 1
+  n= 9 phi= 10 psi=  9 beta= 2
+  n=10 phi= 11 psi= 11 beta= 1
+  n=11 phi= 12 psi= 12 beta= 1
+  n=12 phi= 14 psi= 13 beta= 2
+  n=13 phi= 15 psi= 15 beta= 1
+  n=14 phi= 16 psi= 16 beta= 1
+  n=15 phi= 18 psi= 17 beta= 2
+[7] P4-dissolve witness: n=7 m=15 degen=3 (want 3), ce=5 (phi(7)=7)
+     dissolve pair (0,1): degen(G-v+pair) = 4 (want 4)
+     dissolve pair (0,5): degen(G-v+pair) = 4 (want 4)
+     dissolve pair (1,5): degen(G-v+pair) = 4 (want 4)
+[7b] K5-e + v(x,y,z): n=6 degen=3 (want 3) ce=3 phi(6)=6 ; dissolve xy: degen=4 (want 4)
+[8] split graphs K_3 v I_k: n=k+3, m=3k+3; formula ce = k + ceil(k/3) + 1; tau = k
+  k=1 n=4 m=6: ce=3 pred=3 tau=2 degen=3 phi(n)=3 tight=YES
+  k=2 n=5 m=9: ce=4 pred=4 tau=2 degen=3 phi(n)=4 tight=YES
+  k=3 n=6 m=12: ce=5 pred=5 tau=3 degen=3 phi(n)=6 tight=phi-1
+  k=4 n=7 m=15: ce=7 pred=7 tau=4 degen=3 phi(n)=7 tight=YES
+  k=5 n=8 m=18: ce=8 pred=8 tau=5 degen=3 phi(n)=8 tight=YES
+  k=6 n=9 m=21: ce=9 pred=9 tau=6 degen=3 phi(n)=10 tight=phi-1
+  k=7 n=10 m=24: ce=11 pred=11 tau=7 degen=3 phi(n)=11 tight=YES
+  k=8 n=11 m=27: ce=12 pred=12 tau=8 degen=3 phi(n)=12 tight=YES
+  ALL MATCH formula: False
+[9] GPFAIL witnesses from scan_wit.txt: exact ce vs phi(n)
+  n=7 m=11: ce=5 phi=7 slack=2 degen=3 pure=False
+  n=8 m=12: ce=5 phi=8 slack=3 degen=3 pure=True
+[10] random 3-degenerate graphs with a deg-3 independent-N vertex whose ALL pair-dissolves break 3-degeneracy: 0/3000

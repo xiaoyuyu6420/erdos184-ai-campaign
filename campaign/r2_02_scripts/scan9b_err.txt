@@ -1,0 +1,11 @@
+selftests OK
+level n=1: attempts=1 graphs=1 (0.3s)
+level n=2: attempts=2 graphs=2 (0.8s)
+level n=3: attempts=8 graphs=4 (1.3s)
+level n=4: attempts=32 graphs=11 (1.7s)
+level n=5: attempts=165 graphs=33 (2.2s)
+level n=6: attempts=858 graphs=148 (2.7s)
+level n=7: attempts=6216 graphs=950 (3.2s)
+level n=8: attempts=60800 graphs=10433 (4.0s)
+level n=9: attempts=970269 graphs=198193 (11.9s)
+total time 159.6s
