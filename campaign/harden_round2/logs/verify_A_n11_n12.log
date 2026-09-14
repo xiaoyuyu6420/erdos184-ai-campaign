@@ -1,0 +1,38 @@
+{
+ "files": {
+  "data/A_n11.jsonl": {
+   "records": 266,
+   "failures": 0,
+   "npieces_hist": {
+    "11": {
+     "6": 92,
+     "4": 42,
+     "3": 15,
+     "5": 63,
+     "7": 44,
+     "8": 10
+    }
+   }
+  },
+  "data/A_n12.jsonl": {
+   "records": 7849,
+   "failures": 0,
+   "npieces_hist": {
+    "12": {
+     "7": 1430,
+     "3": 193,
+     "4": 1152,
+     "8": 481,
+     "6": 2305,
+     "5": 2218,
+     "9": 65,
+     "10": 5
+    }
+   }
+  }
+ },
+ "total_records": 8115,
+ "total_failures": 0,
+ "failures": []
+}
+python3 h_verify.py data/A_n11.jsonl data/A_n12.jsonl  1.14s user 0.06s system 15% cpu 7.634 total

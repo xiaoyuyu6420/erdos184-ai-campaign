@@ -1,0 +1,27 @@
+{
+ "n12#1335": {
+  "npieces_construct": 10,
+  "ce_bb": 3,
+  "bb_s": 9.3
+ },
+ "n12#3974": {
+  "npieces_construct": 10,
+  "ce_bb": 3,
+  "bb_s": 10.6
+ },
+ "n12#4472": {
+  "npieces_construct": 10,
+  "ce_bb": 3,
+  "bb_s": 8.9
+ },
+ "n12#5130": {
+  "npieces_construct": 10,
+  "ce_bb": 3,
+  "bb_s": 9.2
+ },
+ "n12#5482": {
+  "npieces_construct": 10,
+  "ce_bb": 3,
+  "bb_s": 8.5
+ }
+}

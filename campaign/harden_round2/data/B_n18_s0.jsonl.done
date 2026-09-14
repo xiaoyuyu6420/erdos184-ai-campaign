@@ -1,0 +1,1 @@
+{"n": 18, "shard": 0, "start": 0, "count": 200, "ok": 200, "fail": 0, "pieces_hist": {"7": 59, "6": 54, "8": 26, "4": 17, "5": 28, "9": 8, "3": 4, "10": 3, "11": 1}, "route_hist": {"flat": 200}, "min": 3, "max": 11, "elapsed_s": 0.31, "file": "data/B_n18_s0.jsonl"}

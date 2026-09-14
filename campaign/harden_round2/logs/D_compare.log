@@ -1,0 +1,9 @@
+== 证书 JSONL sha256 ==
+  A_n10.jsonl: 逐字节一致  9939ab6c38027af9...
+  A_n11.jsonl: 逐字节一致  40e11473289ce2b2...
+  A_n12.jsonl: 逐字节一致  455a227cf26d09ef...
+== 摘要 JSON（剔除墙钟 elapsed_s）==
+  A_n10.jsonl.summary.json: 内容一致
+  A_n11.jsonl.summary.json: 内容一致
+  A_n12.jsonl.summary.json: 内容一致
+D 复现性: PASS（证书逐字节一致；摘要仅墙钟字段不同）

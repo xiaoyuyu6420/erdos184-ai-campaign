@@ -1,0 +1,10 @@
+[C s=8] 4 分片，200 个 B × 3 (匹配,定向) 组合
+  [C] s=8 shard=2 records=150 fail=0 0.67s
+  [C] s=8 shard=0 records=150 fail=0 0.77s
+  [C] s=8 shard=3 records=150 fail=0 0.59s
+  [C] s=8 shard=1 records=150 fail=0 0.81s
+[C s=8] 记录 600 全过（≤ 22 件）；B 失败 0；#comp(Φ)=#comp(Φ−) 在 600/600 条上成立；件数直方图 {'5': 147, '3': 73, '6': 147, '4': 122, '7': 61, '8': 34, '10': 5, '9': 10, '12': 1}
+
+real	0m2.785s
+user	0m1.682s
+sys	0m0.436s

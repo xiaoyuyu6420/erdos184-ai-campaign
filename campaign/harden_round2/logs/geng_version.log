@@ -1,0 +1,4 @@
+# geng 生成命令与输出（Mon Sep 14 09:44:49 CST 2026）
+
+Usage: geng [-cCmtfkbd#D#] [-kTSPF] [-uygsnh] [-lvq] 
+              [-x#X#] n [mine[:maxe]] [res/mod] [file]

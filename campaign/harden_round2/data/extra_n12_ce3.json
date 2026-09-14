@@ -1,0 +1,43 @@
+{
+ "n12#1335": {
+  "construct_pieces": 10,
+  "bb": 3,
+  "s": 7.9,
+  "milp_k3": null,
+  "milp_note": "k=3: \u672a\u5b9a status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> \u505c\u6b62",
+  "milp_s": 176.4
+ },
+ "n12#3974": {
+  "construct_pieces": 10,
+  "bb": 3,
+  "s": 8.9,
+  "milp_k3": null,
+  "milp_note": "k=3: \u672a\u5b9a status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> \u505c\u6b62",
+  "milp_s": 351.4
+ },
+ "n12#4472": {
+  "construct_pieces": 10,
+  "bb": 3,
+  "s": 9.7,
+  "milp_k3": null,
+  "milp_note": "k=3: \u672a\u5b9a status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> \u505c\u6b62",
+  "milp_s": 287.3
+ },
+ "n12#5130": {
+  "construct_pieces": 10,
+  "bb": 3,
+  "s": 9.2,
+  "milp_k3": null,
+  "milp_note": "k=3: \u672a\u5b9a status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> \u505c\u6b62",
+  "milp_s": 460.2
+ },
+ "n12#5482": {
+  "construct_pieces": 10,
+  "bb": 3,
+  "s": 8.7,
+  "milp_k3": null,
+  "milp_note": "k=3: \u672a\u5b9a status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> \u505c\u6b62",
+  "milp_s": 308.6
+ },
+ "_verify_failures": true
+}

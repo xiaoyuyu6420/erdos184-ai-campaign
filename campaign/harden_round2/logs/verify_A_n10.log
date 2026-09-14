@@ -1,0 +1,20 @@
+{
+ "files": {
+  "data/A_n10.jsonl": {
+   "records": 21,
+   "failures": 0,
+   "npieces_hist": {
+    "10": {
+     "5": 10,
+     "8": 2,
+     "7": 3,
+     "4": 2,
+     "6": 4
+    }
+   }
+  }
+ },
+ "total_records": 21,
+ "total_failures": 0,
+ "failures": []
+}

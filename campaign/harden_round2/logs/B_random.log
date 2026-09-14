@@ -1,0 +1,50 @@
+[B] 分片任务 40 个（ns=[15, 18, 21, 24], 每 n 2000 图）
+  [B] 完成 n=15 shard=2 ok=200 fail=0 max=9 0.37s
+  [B] 完成 n=15 shard=3 ok=200 fail=0 max=9 0.38s
+  [B] 完成 n=15 shard=1 ok=200 fail=0 max=9 0.49s
+  [B] 完成 n=15 shard=4 ok=200 fail=0 max=10 0.36s
+  [B] 完成 n=15 shard=0 ok=200 fail=0 max=9 0.64s
+  [B] 完成 n=15 shard=5 ok=200 fail=0 max=11 0.44s
+  [B] 完成 n=15 shard=6 ok=200 fail=0 max=9 0.46s
+  [B] 完成 n=15 shard=7 ok=200 fail=0 max=10 0.52s
+  [B] 完成 n=18 shard=0 ok=200 fail=0 max=11 0.31s
+  [B] 完成 n=15 shard=9 ok=200 fail=0 max=10 0.4s
+  [B] 完成 n=15 shard=8 ok=200 fail=0 max=10 0.44s
+  [B] 完成 n=18 shard=3 ok=200 fail=0 max=12 0.33s
+  [B] 完成 n=18 shard=1 ok=200 fail=0 max=11 0.55s
+  [B] 完成 n=18 shard=2 ok=200 fail=0 max=11 0.51s
+  [B] 完成 n=18 shard=5 ok=200 fail=0 max=10 0.4s
+  [B] 完成 n=18 shard=4 ok=200 fail=0 max=10 0.52s
+  [B] 完成 n=18 shard=8 ok=200 fail=0 max=11 0.4s
+  [B] 完成 n=18 shard=6 ok=200 fail=0 max=11 0.56s
+  [B] 完成 n=18 shard=7 ok=200 fail=0 max=11 0.54s
+  [B] 完成 n=21 shard=0 ok=200 fail=0 max=10 0.4s
+  [B] 完成 n=18 shard=9 ok=200 fail=0 max=10 0.53s
+  [B] 完成 n=21 shard=1 ok=200 fail=0 max=12 0.43s
+  [B] 完成 n=21 shard=3 ok=200 fail=0 max=12 0.44s
+  [B] 完成 n=21 shard=2 ok=200 fail=0 max=11 0.58s
+  [B] 完成 n=21 shard=4 ok=200 fail=0 max=13 0.47s
+  [B] 完成 n=21 shard=5 ok=200 fail=0 max=11 0.4s
+  [B] 完成 n=21 shard=8 ok=200 fail=0 max=11 0.33s
+  [B] 完成 n=21 shard=6 ok=200 fail=0 max=12 0.53s
+  [B] 完成 n=21 shard=9 ok=200 fail=0 max=11 0.51s
+  [B] 完成 n=21 shard=7 ok=200 fail=0 max=12 0.56s
+  [B] 完成 n=24 shard=0 ok=200 fail=0 max=13 0.48s
+  [B] 完成 n=24 shard=1 ok=200 fail=0 max=11 0.58s
+  [B] 完成 n=24 shard=2 ok=200 fail=0 max=12 0.59s
+  [B] 完成 n=24 shard=4 ok=200 fail=0 max=12 0.53s
+  [B] 完成 n=24 shard=3 ok=200 fail=0 max=12 0.58s
+  [B] 完成 n=24 shard=7 ok=200 fail=0 max=12 0.39s
+  [B] 完成 n=24 shard=5 ok=200 fail=0 max=11 0.6s
+  [B] 完成 n=24 shard=6 ok=200 fail=0 max=11 0.56s
+  [B] 完成 n=24 shard=8 ok=200 fail=0 max=13 0.5s
+  [B] 完成 n=24 shard=9 ok=200 fail=0 max=11 0.51s
+[B] n=15: 2000 图全过（≤ 13 件），fail=0，件数 min/max=3/11
+[B] n=18: 2000 图全过（≤ 16 件），fail=0，件数 min/max=3/12
+[B] n=21: 2000 图全过（≤ 19 件），fail=0，件数 min/max=3/13
+[B] n=24: 2000 图全过（≤ 22 件），fail=0，件数 min/max=3/13
+[B] 总用时 3.6s，摘要 -> data/B_summary.json
+
+real	0m4.109s
+user	0m3.612s
+sys	0m0.538s

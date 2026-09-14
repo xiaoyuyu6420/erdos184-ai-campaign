@@ -1,0 +1,12 @@
+[anchor] K_{1,4}          expect=4 BB=4 MILP=4 见证=4/4 LP下界=4.0 OK (0.85s)
+[anchor] K_{2,3}          expect=3 BB=3 MILP=3 见证=3/3 LP下界=1.5 OK (0.00s)
+[anchor] K_{3,3}          expect=4 BB=4 MILP=4 见证=4/4 LP下界=1.5 OK (0.02s)
+[anchor] K3 u K_{3,4}     expect=7 BB=7 MILP=7 见证=7/7 LP下界=5.5 OK (0.17s)
+[anchor] K7               expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000008 OK (0.48s)
+[anchor] K8-PM            expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000001 OK (0.96s)
+[anchor] n9 comp=[9]      expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000001 OK (2.67s)
+[anchor] n9 comp=[6, 3]   expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000001 OK (2.28s)
+[anchor] n9 comp=[5, 4]   expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000002 OK (2.80s)
+[anchor] n9 comp=[3, 3, 3] expect=3 BB=3 MILP=3 见证=3/3 LP下界=3.000000000000047 OK (2.53s)
+[anchor] 全部一致
+python3 h_A_exact.py anchors  2.02s user 0.17s system 16% cpu 13.463 total

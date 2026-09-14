@@ -1,0 +1,1 @@
+{"s": 7, "shard": 6, "start": 300, "count": 50, "records_ok": 150, "B_fail": 0, "pieces_hist": {"5": 38, "7": 17, "6": 26, "8": 6, "4": 34, "3": 29}, "phi_comp_hist": {"1": 93, "2": 52, "3": 5}, "comp_eq_true": 150, "elapsed_s": 0.33, "file": "data/C_s7_s6.jsonl"}

@@ -1,0 +1,12 @@
+{
+ "s": 3,
+ "B_count": 2,
+ "combos": 3,
+ "records_ok": 0,
+ "B_fail": 2,
+ "pieces_hist": {},
+ "phi_comp_hist": {},
+ "comp_eq_all": true,
+ "comp_eq_true": 0,
+ "elapsed_s": 0.7
+}

@@ -1,0 +1,33 @@
+[n12#1335] BB=3 7.9s
+[n12#3974] BB=3 8.9s
+[n12#4472] BB=3 9.7s
+[n12#5130] BB=3 9.2s
+[n12#5482] BB=3 8.7s
+证书 5 条 -> data/extra_n12_ce3_certs.jsonl
+{
+ "files": {
+  "data/extra_n12_ce3_certs.jsonl": {
+   "records": 5,
+   "failures": 0,
+   "npieces_hist": {
+    "12": {
+     "3": 5
+    }
+   }
+  }
+ },
+ "total_records": 5,
+ "total_failures": 0,
+ "failures": []
+}
+
+[n12#1335] MILP k≤3: None (k=3: 未定 status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> 停止) 176.4s
+[n12#3974] MILP k≤3: None (k=3: 未定 status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> 停止) 351.4s
+[n12#4472] MILP k≤3: None (k=3: 未定 status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> 停止) 287.3s
+[n12#5130] MILP k≤3: None (k=3: 未定 status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> 停止) 460.2s
+[n12#5482] MILP k≤3: None (k=3: 未定 status=1(Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)) -> 停止) 308.6s
+完成 -> data/extra_n12_ce3.json
+
+real	27m10.484s
+user	5m15.898s
+sys	0m39.632s

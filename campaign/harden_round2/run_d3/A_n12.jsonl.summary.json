@@ -1,0 +1,26 @@
+{
+ "n": 12,
+ "bound": 10,
+ "classes": 7849,
+ "processed": 7849,
+ "pieces_hist": {
+  "7": 1430,
+  "3": 193,
+  "4": 1152,
+  "8": 481,
+  "6": 2305,
+  "5": 2218,
+  "9": 65,
+  "10": 5
+ },
+ "route_hist": {
+  "flat": 7847,
+  "phi": 2
+ },
+ "violations": 0,
+ "min_pieces": 3,
+ "max_pieces": 10,
+ "elapsed_s": 12.339754104614258,
+ "npieces_le_nminus2": 7849,
+ "nminus2": 10
+}

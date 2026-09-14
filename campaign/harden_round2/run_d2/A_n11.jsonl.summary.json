@@ -1,0 +1,23 @@
+{
+ "n": 11,
+ "bound": 10,
+ "classes": 266,
+ "processed": 266,
+ "pieces_hist": {
+  "6": 92,
+  "4": 42,
+  "3": 15,
+  "5": 63,
+  "7": 44,
+  "8": 10
+ },
+ "route_hist": {
+  "nondiv3mod": 266
+ },
+ "violations": 0,
+ "min_pieces": 3,
+ "max_pieces": 8,
+ "elapsed_s": 0.5548889636993408,
+ "npieces_le_nminus2": 266,
+ "nminus2": 9
+}

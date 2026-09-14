@@ -1,0 +1,16 @@
+[C s=7] 10 分片，500 个 B × 3 (匹配,定向) 组合
+  [C] s=7 shard=0 records=150 fail=0 0.3s
+  [C] s=7 shard=1 records=150 fail=0 0.4s
+  [C] s=7 shard=2 records=150 fail=0 0.44s
+  [C] s=7 shard=7 records=150 fail=0 0.25s
+  [C] s=7 shard=3 records=150 fail=0 0.33s
+  [C] s=7 shard=6 records=150 fail=0 0.33s
+  [C] s=7 shard=4 records=150 fail=0 0.38s
+  [C] s=7 shard=8 records=150 fail=0 0.32s
+  [C] s=7 shard=5 records=150 fail=0 0.49s
+  [C] s=7 shard=9 records=150 fail=0 0.32s
+[C s=7] 记录 1500 全过（≤ 19 件）；B 失败 0；#comp(Φ)=#comp(Φ−) 在 1500/1500 条上成立；件数直方图 {'6': 303, '4': 403, '7': 157, '5': 353, '3': 215, '9': 16, '8': 52, '10': 1}
+
+real	0m1.929s
+user	0m1.564s
+sys	0m0.422s
