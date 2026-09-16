@@ -4,7 +4,7 @@
 
 > **Status: not peer-reviewed, not submitted.** Written and checked by an orchestrated AI system under human direction. Please treat it as a claim to be checked, not as an authority.
 >
-> *Note: the English paper skeleton under [`../../paper/`](../../paper/) predates this result and still lists the case $n \equiv 0 \pmod 3$ as open. The authoritative statement of the result is [`proof.md`](proof.md); the skeleton will be updated when the paper is revised.*
+> *Note: [`../../paper/draft_v2/`](../../paper/draft_v2/) is a revised paper draft that includes this result (§6, with the computational verification summarized in its appendix); the older skeleton `draft_en.tex` predates it. The self-contained statement and proof of the result live in [`proof.md`](proof.md).*
 
 ## Read this first
 
