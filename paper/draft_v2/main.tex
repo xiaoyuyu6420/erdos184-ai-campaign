@@ -1,0 +1,1344 @@
+% !TEX program = pdflatex
+% Draft v2. Theorem statements are final (two adversarial verification rounds); proofs are sketches,
+% each annotated with its source in the project records. Complete proofs live in the campaign archive
+% and are referenced per theorem. Computational verification is summarised in Appendix A.
+\documentclass[a4paper,11pt]{amsart}
+
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\ce}{\operatorname{ce}}
+\newcommand{\fre}{\operatorname{f_{re}}}
+\newcommand{\odd}{\operatorname{odd}}
+% pointer to the complete proof in the project records
+\newcommand{\proofsrc}[1]{\par\smallskip\noindent\begin{sloppypar}\small\emph{Proof status: #1.}\end{sloppypar}\par\smallskip}
+
+\title[The cycle--edge decomposition number of a graph]{Exact values and structural properties of the cycle--edge decomposition number $\ce(G)$}
+
+\author{The Front184 Collaboration}
+\thanks{Draft v2, \today. Every statement below has passed two independent adversarial review rounds, and
+all computational claims are summarised in Appendix~A. Proofs given here are sketches; the complete proofs
+are maintained in the project records and are referenced per theorem.}
+
+\begin{document}
+\begin{abstract}
+A \emph{decomposition} of a graph $G$ is a partition of $E(G)$ into edge-disjoint cycles and single edges,
+and $\ce(G)$ denotes the minimum possible number of parts. Erd\H{o}s and Gallai proved in 1959 that
+$O(n\log n)$ parts always suffice and conjectured that $O(n)$ do; the conjecture is still open, the best
+bound being the $O(n\log^* n)$ of Buci\'c--Montgomery, while the sharper suggestion that $n-1$ parts might
+suffice fails already on $K_{3,n-3}$. This paper maps where the $n-1$ budget holds exactly and where it
+breaks. We determine $\ce(K_n)$ for every $n$; we prove that $\ce$ is exactly additive over blocks, so that
+cut-vertices never help, and derive a transfer principle that reduces every linear bound to its
+$2$-connected case. For bounded degree, the $n-1$ bound fails at maximum degree six---the graph formed by a
+triangle and a $K_{3,4}$ on the same three vertices has $n=7$ and $\ce=7$---while for Eulerian graphs of
+maximum degree at most six we prove $\ce(G)\le n-1$ without exception. The latter resolves the six-regular
+case of a problem of Akbari--Aloni--Beikmohammadi--Clow, with a strengthened bound: every $6$-regular graph
+on $n$ vertices with $n\equiv 0\pmod 3$ satisfies $\ce(G)\le n-2$. The proof rests on a rigidity lemma,
+which says that a $4$-regular graph whose $2$-factors are all unions of triangles must be the line graph
+$L(B)$ of a cubic bipartite graph, together with an explicit factorisation of such line graphs into two
+triangle-free $2$-factors (an explicit form of an observation of Kouider--Sabidussi). We also prove the
+cubic case of the same authors' odd-regular conjecture for the relaxed invariant $\fre$, reduce the general
+$\Delta\le 6$ question to an explicitly identified $T$-join danger zone, and establish a sharp degeneracy
+threshold: $\ce\le n-1$ holds for every $2$-degenerate graph and fails at every degeneracy $d\ge 3$.
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{The problem}
+
+Let $G$ be a finite simple graph on $n$ vertices and $m$ edges. A \emph{part} is either a single edge or
+the edge set of a simple cycle, and a \emph{decomposition} of $G$ is a partition of $E(G)$ into parts. The
+minimum number of parts is $\ce(G)$, the cycle--edge decomposition number of $G$. The definition is naive;
+the function is not.
+
+Erd\H{o}s and Gallai \cite{EG59} proved that every $n$-vertex graph admits a decomposition into
+$O(n\log n)$ parts, and conjectured that $O(n)$ always suffice; the conjecture in this form is recorded in
+\cite{EGP66} and is listed as Problem \#184 in Erd\H{o}s' problem collection \cite{EP184}. Erd\H{o}s also
+suggested, in \cite{Er71}, that $n-1$ parts might always be enough. Read without edge-disjointness, that
+suggestion is a theorem: Pyber \cite{Py85} showed that $n-1$ cycles and edges always \emph{cover} the edges
+of a graph. Read with edge-disjointness, it is false, and it fails early: the complete bipartite graph
+$K_{3,n-3}$ already forces $(4/3)(n-3)$ parts, and the construction of Erd\H{o}s \cite{E83}, which uses the
+complete bipartite graphs $K_{2k+1,\,n-2k-1}$ and generalises an example of Gallai, forces
+$(3/2-o(1))n$ parts; both computations are carried out in \cite{BM22}. And yet no graph is known to need
+more than $(3/2-o(1))n$ parts. The linear story is wide open. After
+Conlon--Fox--Sudakov \cite{CFS14} improved the general upper bound to $O(n\log\log n)$, Buci\'c and
+Montgomery \cite{BM22} obtained the current best, $O(n\log^* n)$.
+
+Why should one study the precise question $n-1$, given that it is false? Because the counterexamples are
+highly structured, and knowing exactly which families meet the budget and which break it says something
+about where the true constant of the linear conjecture comes from. That is the point of view of this paper:
+we treat $n-1$ as a budget and audit it, family by family.
+
+\subsection{This paper}
+
+The audit proceeds on four fronts. First, structure: cut-vertices never help. We prove that $\ce$ is
+exactly additive over blocks,
+$\ce(G)=\sum_{B}\ce(B)$ (Theorem~\ref{thm:blockadd}), so the entire difficulty of the problem lives on
+$2$-connected blocks, and every linear bound can be transferred between general graphs and their blocks
+(Corollary~\ref{cor:transfer}). At the two ends of the density range the budget is met with zero slack, for
+opposite reasons: trees have no cycles to merge, while even-order complete graphs are pinned by parity
+--- every decomposition of $K_{2m}$ needs at least $m$ single edges --- and the two accounts close at
+exactly $n-1$ (Theorem~\ref{thm:complete}).
+
+Second, bounded degree. The $n-1$ bound holds for $\Delta\le4$ \cite{AABC25}, whose authors ask what
+happens at $\Delta=5$ and $\Delta=6$. At $\Delta=6$ the budget breaks: the graph $K_3\cup K_{3,4}$ --- a
+$K_{3,4}$ and a triangle on the same three vertices --- has $n=7$, $\Delta=6$, and
+$\ce=7=n$ (Theorem~\ref{thm:counterex}). The interesting news is on the Eulerian side. For Eulerian graphs
+of maximum degree $6$ we close the problem completely at $n-1$, and this resolves the six-regular case of
+Problem 6.1 of \cite{AABC25} with a strengthened bound
+\begin{center}
+every $6$-regular simple graph with $n\equiv 0\pmod 3$ satisfies $\ce(G)\le n-2$,
+\end{center}
+together with the verbatim proof of Conjecture 6.2 of \cite{AABC25} (every $6$-regular graph decomposes
+into three $2$-factors, one of which has a component of order at least $4$). The obstacle that had held up
+the six-regular case is genuinely structural. If all $2$-factors of a $4$-regular graph are unions of
+triangles, then the graph is forced to be the line graph $L(B)$ of a cubic bipartite graph
+(Lemma~\ref{lem:fourreg}); on such line graphs, two complementary $2$-factors $\Phi(M)$ and $\Phi(-M)$,
+built from an orientation of a perfect matching of $B$, partition the edge set into two triangle-free
+$2$-factors (Proposition~\ref{prop:antiphi}) --- a contradiction. That last construction is an explicit,
+self-contained special case of an observation of Kouider--Sabidussi \cite{KS95}, and we claim no priority
+for the existence statement itself; the reduction, the explicit partition, and the resulting bounds are,
+to the best of our knowledge, new. The general $\Delta\le6$ question is then reduced to a $T$-join bound
+with an honestly identified danger zone (Theorem~\ref{thm:d6tjoin}, Remark~\ref{rem:danger}).
+
+Third, odd degrees on the relaxed invariant. The paper \cite{AABC25} also studies $\fre(G)$, the minimum
+number of blocks in a partition of $E(G)$ into $2$-regular subgraphs and single edges, and conjectures
+(Conjecture~6.4 there) that every $(2k+1)$-regular graph has $\fre\le n-1$. The case of graphs with a
+perfect matching is easy and was already observed in \cite{AABC25}; the open core is the graphs without
+one. We prove the cubic case unconditionally: every cubic graph satisfies $\fre(G)\le n-1$
+(Theorem~\ref{thm:cubicpmfree}). The argument is a reduction chain --- an exact formula
+$\fre=p+1$ on cubic graphs in terms of the minimum $T$-join, a decomposition of $p$ over the block tree,
+and a lower bound on even subgraphs of bridgeless subcubic blocks --- whose last step is quoted from the
+published Theorem 1.3 of Choi--Kim--Kostochka--Park--West \cite{CKKPW19}; our contribution is the chain
+itself and an exhaustive computational verification.
+
+Fourth, sparsity. The degeneracy hierarchy collapses cleanly: $\ce\le n-1$ holds for every
+$2$-degenerate graph --- equivalently every $K_4$-minor-free graph --- and fails, by arbitrarily large
+margins, at every degeneracy $d\ge3$ (Theorems~\ref{thm:deg2} and \ref{thm:degex}). The extremal family is
+the complete bipartite graph $K_{3,q}$, for which we determine $\ce$ exactly for all $q$
+(Theorem~\ref{thm:k3q}), so the asymptotic constant of the $3$-degenerate class is pinned to $[4/3,\,5/3]$.
+
+Finally, we dissect the Buci\'c--Montgomery architecture from the inside (Section~\ref{sec:bm}): the
+polylogarithmic remainder map is locked to depth $\log^* n$ by a superconstant fixed point; the apparently
+better remainder $2^{(\log d)^\theta}$ in fact yields depth $\Theta(\log\log\log n)$, which is
+\emph{worse}; and no amount of edge deletion can create the expanders the method needs. These are
+architecture-relative statements --- they locate what any improvement must change, not unconditional lower
+bounds against all algorithms.
+
+\subsection{Relation to known results}
+
+Pyber's covering theorem \cite{Py85} gives $n-1$ parts when edges may be reused; our block calculus shows
+that for the decomposition version nothing is ever gained or lost at a cut-vertex, so the whole difficulty
+is $2$-connected. The planar case of the decomposition problem does not appear to have been studied before;
+a literature search in September 2026 found no prior work, though we have not re-verified this against the
+full literature. The toroidal and positive-genus bounds of Section~\ref{sec:planar} appear to be new, with
+the same caveat, as does the $K_4$-minor-free statement of Theorem~\ref{thm:deg2} (flagged as an
+unverified-novelty item in our own records). For Theorem~\ref{thm:kst} no novelty is claimed at all: the
+lower bounds are known, the computation is the same as in \cite{BM22,E83}, and we restate it only because
+our extremal families are built on it. The six-regular factorisation of line graphs into triangle-free
+$2$-factors (Proposition~\ref{prop:antiphi}) is an explicit special case of Kouider--Sabidussi
+\cite{KS95}; the related algorithmic result of Bertram--Hor\'ak \cite{BH97} decides whether a
+$4$-regular graph decomposes into two triangle-free $2$-factors but contains no counting consequence for
+$\ce$. Where our extremal mechanisms coincide with the known $(3/2-o(1))n$ construction --- parity-forced
+single edges at the dense side of an odd complete bipartite kernel --- we say so in place.
+
+\section{Preliminaries}\label{sec:prelim}
+
+All graphs are finite and simple. For a graph $G$ we write $n=|V(G)|$, $m=|E(G)|$, $\Delta=\Delta(G)$, and
+$c(G)$ for the number of connected components. A \emph{part} is a single edge or the edge set of a simple
+cycle of length at least $3$.
+
+\begin{definition}\label{def:ce}
+A \emph{decomposition} of $G$ is a partition of $E(G)$ into parts. $\ce(G)$ is the minimum number of parts
+in a decomposition, with $\ce(G)=0$ when $E(G)=\emptyset$. Let $f(n)=\max\{\ce(G):|V(G)|=n\}$.
+\end{definition}
+
+Two identities do most of the elementary work. The first converts decompositions into cycle packing; the
+second converts parity into forced single edges.
+
+\begin{lemma}[Budget/savings identity]\label{lem:savings}
+For any decomposition with $k$ cycles of lengths $\ell_1,\dots,\ell_k$ and $s$ single edges,
+$k+s=m-\sum_i(\ell_i-1)$. Consequently
+\[
+\ce(G)\;=\;m-\max_{\mathcal{C}}\ \textstyle\sum_{C\in\mathcal{C}}(|C|-1),
+\]
+where the maximum is over edge-disjoint cycle families $\mathcal{C}$ (all remaining edges are taken as
+single-edge parts).
+\end{lemma}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_03\_constant.md} \S0 and
+\texttt{campaign/lane\_04\_delta5\_savings.md} \S1; elementary.}
+
+\begin{definition}\label{def:parity}
+Let $T=T(G)$ be the set of odd-degree vertices. A subgraph $F\subseteq G$ is a \emph{parity subgraph} if
+$\deg_F(v)\equiv\deg_G(v)\pmod 2$ for all $v$; equivalently $F$ is a $T$-join in the sense of
+Edmonds--Johnson \cite{EJ73}. Let $\tau(G)$ be the minimum number of edges of a parity subgraph, and let
+$\odd(G)=|T|$.
+\end{definition}
+
+\begin{lemma}[Parity bounds]\label{lem:parity}
+In any decomposition the single edges form a parity subgraph; hence $2s\ge\odd(G)$ and $s\ge\tau(G)$ for
+the number $s$ of single edges, and $\ce(G)\ge\odd(G)/2$.
+\end{lemma}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_09\_blocks.md} Lemma F; elementary
+double counting.}
+
+\begin{lemma}[T-join upper bound]\label{lem:tjoin}
+For every connected graph $G$,
+$\ce(G)\le \tau(G)+\lfloor (m-\tau(G))/3\rfloor\le\lfloor (m+2\tau(G))/3\rfloor$.
+Consequently, if $m+2\tau(G)\le 3n-3$ then $\ce(G)\le n-1$; and $\tau(G)\le n-1$ always, via a spanning
+tree, so the criterion applies to every family with $m$ bounded by $3n+O(1)$.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Take a minimum parity subgraph $F$ with $|F|=\tau$. Then $G-F$ is Eulerian, hence decomposes into at most
+$\lfloor(m-\tau)/3\rfloor$ edge-disjoint cycles; add the $\tau$ edges of $F$ as single-edge parts. The
+criterion is integer arithmetic. For the last claim, the unique minimal $T$-join inside a spanning tree has
+at most $n-1$ edges.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_04\_delta5\_savings.md} Thm.~1.2
+(``R1'') and \texttt{campaign/lane\_08\_degeneracy.md} Lemmas 3.1--3.2 (independent re-derivation). Note
+that the bound is meaningful only for families with $m=O(n)$; used with $m\le dn-\binom{d+1}{2}$
+(degenerate graphs, Theorem~\ref{thm:deg3ub}) and with $m\le3n$ (maximum degree six,
+Theorem~\ref{thm:d6tjoin}).}
+
+\begin{definition}\label{def:blocks}
+A \emph{block} of $G$ is a maximal subgraph with no cut-vertex of itself; every block is a bridge $K_2$ or
+$2$-connected, the blocks partition $E(G)$, and any two blocks share at most one vertex. The
+\emph{degeneracy} of $G$ is $d=\max_{H\subseteq G}\delta(H)$, and the $d$-core is the unique maximal
+subgraph of minimum degree at least $d$. The \emph{orientable genus} $g(G)$ is the minimum genus of an
+orientable surface in which $G$ embeds; all embeddings below are cellular. Orientable genus is additive
+over blocks \cite{BHKY62}, whereas non-orientable genus is not \cite{SB77}; all genus statements in this
+paper are therefore for the orientable invariant.
+\end{definition}
+
+\section{Complete graphs and the block calculus}\label{sec:blocks}
+
+\begin{theorem}[Complete graphs]\label{thm:complete}
+For all $m\ge2$, $\ce(K_{2m})=2m-1$; for all $m\ge1$, $\ce(K_{2m+1})=m$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+The upper bounds are the classical Walecki constructions: $K_{2k+1}$ decomposes into $k$ edge-disjoint
+Hamilton cycles, and $K_{2k}$ into $k-1$ Hamilton cycles plus a perfect matching; see \cite{Lucas1883} and
+\cite{BM08}. For the lower bounds, let $n=2k+1$: every part has at most $n$ edges, so
+$\ce\ge\lceil m/n\rceil=(n-1)/2$. Let $n=2k$: all $2k$ vertices are odd, so any decomposition contains
+$s\ge k$ single edges by Lemma~\ref{lem:parity}; with $k'$ cycles,
+$k'\ge(m-s)/(2k)$ and $\ce=s+k'\ge(2k-1)/2+s(2k-1)/(2k)\ge 2k-1=n-1$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_09\_blocks.md} Thm.~G (self-contained
+lower bounds; designated proof of record). Numerics: $\ce(K_4)=3$, $\ce(K_5)=2$, $\ce(K_6)=5$,
+$\ce(K_7)=3$, $\ce(K_8)=7$ by independent exact solvers, that for $K_8$ being a $3.3\times10^7$-step search
+log; see Appendix~A.}
+
+The exact values show two opposite ways of sitting exactly at the budget. Trees do it for lack of
+material; $K_{2m}$ does it at full density, because parity pins down $n/2$ single edges and the accounting
+then closes at exactly $n-1$. Since zero-slack $2$-connected blocks of the second kind exist at every even
+order, no uniform per-block discount can exist. The next results make this precise.
+
+\begin{theorem}[Block additivity]\label{thm:blockadd}
+For every graph $G$ with block set $\mathcal{B}(G)$,
+\[
+\ce(G)\;=\;\sum_{B\in\mathcal{B}(G)}\ce(B).
+\]
+Moreover every connected graph satisfies the counting identity $\sum_{B}(|V(B)|-1)=n-1$, and more generally
+$\sum_B(|V(B)|-1)=n-c(G)$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+For ($\le$), concatenate optimal decompositions of the blocks; block edge sets are disjoint. For ($\ge$),
+observe that every part is $2$-regular-connected or a single edge, hence lies in a unique block --- a cycle
+meeting two blocks would force two blocks to share three vertices. Grouping parts by block therefore
+yields decompositions of the blocks, so the number of parts is at least the right-hand side. The counting
+identity follows by induction on the block--cutvertex tree.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_09\_blocks.md} Thm.~A and Lemma 1.6
+(which includes a recorded instance where a $300$-instance randomized check corrected the identity's first
+draft).}
+
+Block additivity is an equality, not an inequality: no decomposition can ever exploit a cut-vertex to save
+a part. Two corollaries quantify this.
+
+\begin{corollary}[Transfer principle]\label{cor:transfer}
+For $\alpha\ge1$: every $2$-connected graph $H$ satisfies $\ce(H)\le\alpha(|V(H)|-1)$ \emph{if and only if}
+every graph $G$ satisfies $\ce(G)\le\alpha(n-c(G))$. In particular, for $\alpha=1$ the $n-1$ problem is
+exactly equivalent to its $2$-connected restriction.
+\end{corollary}
+
+\begin{corollary}[Excess additivity]\label{cor:excess}
+$\ce(G)-(n-c(G))=\sum_{B}\bigl[\ce(B)-(|V(B)|-1)\bigr]$: the excess over the linear budget is the sum of
+per-block excesses, with no cancellation between blocks.
+\end{corollary}
+\proofsrc{Complete proofs of Corollaries~\ref{cor:transfer}--\ref{cor:excess} in campaign records,
+\texttt{campaign/lane\_09\_blocks.md} Cor.~B/C.}
+
+\begin{proposition}[Merge criterion]\label{prop:merge}
+(i) In any decomposition, two distinct parts can never be merged into one part. (ii) $k\ge2$ parts can be
+merged into one part if and only if the union of their edge sets is the edge set of a single cycle.
+Consequently the cut-vertex discount is exactly zero: no restructuring across, or at, a cut-vertex ever
+saves a part.
+\end{proposition}
+\begin{proof}[Proof sketch]
+A union of two parts is the edge set of a cycle only if it is connected and $2$-regular. Two cycles sharing
+a vertex give degree $4$ there, and disjoint ones are disconnected; a cycle plus a single edge gives degree
+$3$ at an endpoint; two single edges are not $2$-regular.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_09\_blocks.md} Thm.~D (minimal
+witness: the bowtie, $\ce=2$).}
+
+\begin{theorem}[Cactus graphs]\label{thm:cactus}
+Let $G$ be connected with every block a bridge or a cycle, and let $t$ be the number of blocks. Then
+$\ce(G)=t=(n-1)-\sum_{C\ \mathrm{cycle\ block}}(|C|-2)$.
+\end{theorem}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_09\_blocks.md} Thm.~E.}
+
+\begin{remark}\label{rem:zeroslack}
+The two zero-slack mechanisms push in opposite directions, and together they explain why the $n-1$ problem
+resists both sparse and dense intuition. Numerically, $\ce(K_{2m})=2m-1$ is attained at every tested even
+order up to $8$, while $\ce(K_{2m+1})=m\approx n/2$: odd complete graphs enjoy a factor-$2$ discount, their
+even cousins none at all.
+\end{remark}
+
+\section{Planar, toroidal, and positive-genus families}\label{sec:planar}
+
+\begin{theorem}[Outerplanar graphs]\label{thm:outerplanar}
+Every $n$-vertex outerplanar graph satisfies $\ce(G)\le n-1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Reduce to blocks. A $2$-connected outerplanar graph has a Hamilton outer cycle, and its weak dual is a
+tree. Peel a leaf face: its boundary is one chord $xy$ plus an outer arc whose internal vertices all have
+degree exactly $2$, so the arc together with $xy$ forms a cycle $C^*$ whose deletion leaves an outerplanar
+graph. Induction gives $\ce(G)\le1+\ce(G')\le1+(n-k)-1\le n-1$, where $k$ is the number of peeled internal
+vertices. The degenerate one-chord case is handled explicitly in the archived proof.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{notes/attack\_planar.md} Thm.~A with Lemmas A1--A3;
+the proof underwent an adversarial fix round (degree-$2$ property of arc-internal vertices; degenerate
+case).}
+
+\begin{theorem}[Eulerian plane graphs]\label{thm:eulerplanar}
+Every $n\ge3$-vertex Eulerian plane graph satisfies $\ce(G)\le n-2$; in fact $E(G)$ decomposes into at most
+$n-2$ cycles, with no single edges.
+\end{theorem}
+\begin{proof}[Proof sketch]
+An Eulerian graph decomposes into edge-disjoint cycles, each of length at least $3$, and $m\le 3n-6$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{notes/attack\_planar.md} Thm.~B.}
+
+\begin{theorem}[Eulerian maximal plane graphs]\label{thm:eulermaxplanar}
+If $G$ is an Eulerian maximal plane graph, then $E(G)$ decomposes into exactly $n-2$ edge-disjoint facial
+triangles. This is an existence statement for a structured decomposition; $n-2$ need not be $\ce(G)$ ---
+the octahedron has $\ce=2$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+The dual $G^*$ is $3$-regular and bipartite, since a plane graph is Eulerian exactly when its dual is
+bipartite. A bipartition class of $G^*$ has $(2n-4)/2=n-2$ faces, and every edge of $G$ lies in exactly one
+of them.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{notes/attack\_planar.md} Thm.~C (the ``minimality''
+claim of a first draft was withdrawn in review).}
+
+\begin{theorem}[Bridgeless cubic graphs]\label{thm:cubic}
+Every $n$-vertex bridgeless cubic graph satisfies $\ce(G)\le 5n/6$, which is $\le n-1$ for $n\ge6$.
+Cubic graphs with bridges satisfy $\ce(G)\le n-1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+By the Petersen theorem \cite{Pe91} a bridgeless cubic graph has a perfect matching $M$; then $G-M$ is a
+$2$-factor with at most $n/3$ cycles. Decompose into $M$ as single edges plus those cycles. Planarity is
+not used. The bridged case follows from $\Delta\le4$ \cite{AABC25}.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{notes/attack\_planar.md} Thm.~D/D$'$ and
+\texttt{campaign/lane\_06\_genus.md} L6.4.}
+
+\begin{theorem}[Eulerian toroidal graphs]\label{thm:eulertorus}
+Every Eulerian graph embeddable in the torus satisfies $\ce(G)\le n-1$; moreover any triangulation
+component satisfies $\ce\le n-2$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Work per component. If $e\le 3n-1$, the Euler decomposition gives at most $\lfloor e/3\rfloor\le n-1$
+cycles. If $e=3n$, the component is a torus triangulation, hence simple, $2$-connected, and of even
+minimum degree at least $4$; by Dirac's circumference theorem \cite{Di52} it contains a cycle of length
+$\ge\min\{n,2\delta\}\ge7$, and removing it leaves an Eulerian graph decomposable into at most
+$\lfloor(3n_i-7)/3\rfloor=n_i-3$ cycles, for a total of at most $n_i-2$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_06\_genus.md} L6.3. The $g=0$
+specialisation gives only the weaker $n-1$, so this theorem is compatible with, and does not subsume, the
+open planar conjecture $\ce\le n-1$.}
+
+\begin{theorem}[Explicit genus bounds]\label{thm:genus}
+Let $G$ have orientable genus $g$.
+(i) $\ce(G)\le (m+2n-2)/3\le 5n/3+2g-8/3$.
+(ii) If moreover $G$ is Eulerian, then $\ce(G)\le\lfloor m/3\rfloor$; in particular $\ce(G)\le n+2g-3$,
+and $\ce(G)\le n+2g-4$ if $G$ triangulates the genus-$g$ surface.
+\end{theorem}
+\begin{proof}[Proof sketch]
+(i) Greedily peel edge-disjoint cycles until a forest $R$ remains; peeling $k$ cycles of total length $L$
+costs $k+|E(R)|\le L/3+|E(R)|\le m/3+2(n-1)/3$, and $m\le 3n-6+6g$ by Euler's formula. (ii) The Euler
+decomposition has at most $\lfloor m/3\rfloor$ cycles; the triangulation case gains one via the Dirac-cycle
+argument of Theorem~\ref{thm:eulertorus}.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_06\_genus.md} L6.1/L6.2. Part (i) is
+a folkloristic observation recorded for completeness.}
+
+\begin{corollary}[Eulerian plane triangulations]\label{cor:eulertripy}
+For $n\ge8$, every Eulerian plane triangulation satisfies $\ce(G)\le n-4$. No Eulerian plane triangulation
+exists for $n=7$: its degree sequence would be $(6^1,4^6)$, giving a universal vertex whose link is a
+$6$-cycle with the remaining three edges drawn outside as a non-crossing perfect matching, that is, a
+$3$-regular outerplanar graph --- contradicting the fact that every outerplanar graph has two vertices of
+degree at most $2$.
+\end{corollary}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_06\_genus.md} L6.2$'$ as revised in
+the review round; an earlier ``spoke counting'' argument there contained a counting error and was replaced
+by the degree-sequence argument. Exhaustive enumeration double-checks $n\le7$, with the octahedron unique
+at $n=6$ (Appendix~A).}
+
+\begin{corollary}[Hamiltonian graphs of genus $g$]\label{cor:hamilton}
+Let $G$ have orientable genus $g$ and contain a Hamilton cycle. Then
+$\ce(G)\le 1+(m-n)/3+2(n-1)/3\le 4n/3+2g-5/3$. In particular, every $5$-connected toroidal graph --- which
+is Hamiltonian by Thomas--Yu \cite{TY97} --- satisfies $\ce(G)\le 4n/3+1/3$.
+\end{corollary}
+\begin{proof}[Proof sketch]
+Delete the Hamilton cycle and apply Theorem~\ref{thm:genus}(i) to the remainder; the last inequality uses
+$m\le 3n-6+6g$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_06\_genus.md} L6.5.}
+
+\begin{corollary}[A necessary growth rate in $g$]\label{cor:genuslb}
+Any universal bound of the form ``every genus-$g$ graph has $\ce\le n-1+f(g)$'' requires
+$f(g)\ge\lceil(4g-4)/3\rceil$ for $g\ge2$: the graph $K_{3,\,4g+2}$ has genus exactly $g$ by Ringel's
+formula \cite{Ri74}, has $n=4g+5$, and satisfies $\ce(K_{3,4g+2})=\lceil(16g+8)/3\rceil$ by
+Theorem~\ref{thm:k3q}.
+\end{corollary}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_06\_genus.md} L6.6 (assembled from
+Theorem~\ref{thm:k3q}, verified for all $q$, plus Ringel's formula, whose genus-$2$ window was checked
+exactly).}
+
+\section{Dirac-regular graphs}\label{sec:dirac}
+
+\begin{theorem}[Dirac-regular graphs]\label{thm:dirac}
+Let $n_0$ be the constant of the Hamilton decomposition theorem of Csaba--K\"uhn--Lo--Osthus--Treglown
+\cite{CKLOT16}, and let $G$ be a $D$-regular graph on $n\ge n_0$ vertices with $D\ge\lfloor n/2\rfloor$.
+Then:
+\begin{enumerate}
+\item[(i)] if $n$ is odd, $\ce(G)=D/2\le (n-1)/2$, with no single edges;
+\item[(ii)] if $n$ and $D$ are even, $\ce(G)=D/2\le (n-2)/2$, with no single edges;
+\item[(iii)] if $n$ is even and $D$ is odd, $\ce(G)=(D-1)/2+n/2\le n-1$.
+\end{enumerate}
+In particular every Dirac-regular graph on $n\ge n_0$ vertices satisfies $\ce(G)\le n-1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+By \cite{CKLOT16}, $G$ decomposes into Hamilton cycles plus at most one perfect matching. Compare edge
+counts modulo $n$: $e(G)=Dn/2$ is divisible by $n$ exactly when $D$ is even, which forces the matching to
+be empty in cases (i)--(ii) (in case (i) no perfect matching exists at all) and forces it present with
+$t=(D-1)/2$ cycles in case (iii). Maximal $D$ in each regime gives the displayed inequalities; (iii) at
+$D=n-1$ with $n$ even gives exactly $n-1$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_07\_mindegree.md} Thm.~A, checked
+against the local copy of the source of \cite{CKLOT16}.}
+
+\begin{remark}[Scope]\label{rem:diracscope}
+The restriction $n\ge n_0$ is essential and must not be dropped: $n_0$ is an astronomical constant, and the
+small-$n$, $D\in\{5,6\}$ regular range is not covered by Theorem~\ref{thm:dirac}. No contradiction with the
+open status of $\Delta\le5$ follows --- but neither is that case subsumed. The gap between
+Theorem~\ref{thm:dirac} and its own lower-bound anchor ($\ce(K_n)\ge n/2$ for even $n$) is a factor of
+about $2$; see Section~\ref{sec:open} for the non-regular Dirac problem.
+\end{remark}
+
+\section{Maximum degree six: the counterexample and the six-regular case}\label{sec:delta6}
+
+The $n-1$ budget survives $\Delta\le4$ \cite{AABC25} and, as far as anyone can tell, $\Delta\le5$. This
+section is about where it dies, and about how much of the $\Delta\le6$ world can be saved.
+
+\subsection{The counterexample}
+
+\begin{theorem}[$\Delta\le6$ with $\ce=n$]\label{thm:counterex}
+Let $G$ have vertices $a_1,a_2,a_3,b_1,\dots,b_4$ and edge set consisting of the triangle
+$a_1a_2,a_2a_3,a_3a_1$ plus all twelve edges $a_ib_j$; equivalently, $G$ is the union of $K_3$ and
+$K_{3,4}$ sharing the vertex set $\{a_1,a_2,a_3\}$. Then $n=7$, $m=15$, $\Delta=6$, and $\ce(G)=7=n$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+An explicit $7$-part certificate --- three cycles of lengths $4,3,4$ and four single edges --- covers each
+of the $15$ edges exactly once, so $\ce\le7$. For the lower bound, each $b_j$ has odd degree $3$, so at
+least one single edge is incident to each $b_j$ (Lemma~\ref{lem:parity}); any decomposition with at most
+$6$ parts therefore has $c+s\le6$ with $s\ge4$, leaving the cases
+$(c,s)\in\{(0,4),(0,5),(0,6),(1,4),(1,5),(2,4)\}$. The cases with $c\le1$ cannot cover $15$ edges with
+cycles of length at most $7$. For $c=2,s=4$: exactly one single edge is taken at every $b_j$, so the two
+cycles must supply all eight remaining edge-ends at the $b$-vertices. The lengths must be $\{4,7\}$ or
+$\{5,6\}$. A $7$-cycle visits seven distinct vertices, hence all four $b_j$'s, demanding eight
+$b$-side ends on seven edges --- impossible. For $\{5,6\}$: a $6$-cycle is purely bipartite and touches
+three $b_j$'s, while the $5$-cycle, which then contains a triangle edge and only three $a$-vertices are
+available, needs two \emph{untouched} $b_j$'s --- of which only one remains.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_05\_delta6.md} Thm.~B. Verified four
+independent ways: a DP solver, branch-and-bound, a feasibility enumeration at $k=5,6$, and an independently
+written solver with zero shared code (\texttt{campaign/prepub\_independent\_check.py}), plus per-edge
+certificate checking (Appendix~A).}
+
+\begin{corollary}\label{cor:d6fail}
+``$\Delta\le6\Rightarrow\ce\le n-1$'' is false. Trees show that $n-1$ is attained already at $\Delta\le1$,
+and Theorem~\ref{thm:counterex} shows that $n$ is attained at $\Delta=6$; so within $\Delta\le6$ the
+$0$-slack behaviour of trees persists at the top degree, and $n$ is the natural next ceiling.
+\end{corollary}
+
+\subsection{Eulerian graphs of maximum degree six}
+
+\begin{theorem}[Eulerian graphs of maximum degree $6$]\label{thm:d6even}
+Let $G$ be Eulerian with $\Delta(G)\le6$. Then:
+(i) $\ce(G)\le 3\lfloor n/3\rfloor\le n$;
+(ii) if $n\not\equiv0\pmod3$, or if $G$ is not $6$-regular, then $\ce(G)\le n-1$.
+In particular, $\ce(G)\ge n$ forces $n\equiv0\pmod3$ and $G$ $6$-regular.
+\end{theorem}
+\begin{proof}[Proof sketch]
+By \cite{AABC25} (Thm.~1.5: an even graph of maximum degree $\Delta$ decomposes into $\Delta/2$
+$2$-regular subgraphs), $E(G)$ splits into $F_1,F_2,F_3$. Each $F_i$ is a union of vertex-disjoint cycles
+of length at least $3$, so $F_i$ contributes at most $\lfloor n/3\rfloor$ parts, and the cycles of the three
+factors concatenate to a decomposition. If $n=3m'\pm1$ this already gives $\le n-1$. If $G$ is not
+$6$-regular, some vertex has degree at most $4$ and is missed by one of the factors, saving one further
+part.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_05\_delta6.md} Thm.~A.}
+
+So everything funnels into one case: $6$-regular, $n\equiv0\pmod3$. Theorem~\ref{thm:d6even} leaves it at
+$\ce\le n$; we now close it at $n-2$. Throughout, $6$-regular graphs have $n\ge7$, so under
+$n\equiv0\pmod3$ we have $n\ge9$; write $n=3m$.
+
+\begin{lemma}[Petersen's $2$-factorisation, self-contained form]\label{lem:petersen2f}
+Every $2k$-regular graph decomposes into $k$ edge-disjoint spanning $2$-factors.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Orient each component along an Euler tour; every vertex gets in-degree $=$ out-degree $=k$. Split each
+vertex into an out-copy and an in-copy and view the arcs as edges of a $k$-regular bipartite graph; by
+Hall's theorem this graph has a perfect matching, and removing perfect matchings one at a time gives $k$
+edge-disjoint perfect matchings (K\"onig). Each matching is a $1$-in/$1$-out spanning digraph without
+$2$-cycles (each edge is oriented once), hence a union of directed cycles of length at least $3$; its
+underlying undirected graph is a spanning $2$-factor.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/r2\_01\_aabc25\_struct.md} \S1, Lemma 0;
+classical, included for completeness.}
+
+\begin{lemma}[Rigidity of triangle-forced $4$-regular graphs]\label{lem:fourreg}
+Let $G$ be a $4$-regular simple graph with $|V(G)|\ge5$ in which every $2$-factor is a union of triangles.
+Then there are a cubic bipartite graph $B$ and an isomorphism $G\cong L(B)$. In particular $G$ has two
+edge-disjoint triangle $2$-factors, and any two of its triangles from different factors share at most one
+vertex.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Suppose every $2$-factor of $G$ is a union of triangles, and argue in steps.
+(1) By Lemma~\ref{lem:petersen2f} with $k=2$, $G=F\sqcup F'$ with $F$ a $2$-factor; then $F'=G-E(F)$ is
+also a $2$-factor, and both are triangle $2$-factors. Write $n=3m$, $m\ge2$.
+(2) Crossing pattern. If $a\ne b$ lay in both a triangle $\tau$ of $F$ and a triangle $\sigma$ of $F'$,
+then, triangles being cliques in a simple graph, the edge $ab$ would lie in $E(F)\cap E(F')$, which is
+empty; so $|V(\tau)\cap V(\sigma)|\le1$. Each vertex lies in exactly one triangle of each factor. If two
+vertices of $\tau$ sat in the same $F'$-triangle, that triangle would share two vertices with $\tau$;
+hence the three vertices of $\tau$ lie in three \emph{distinct} $F'$-triangles, and symmetrically for
+$\sigma$. (When $m=2$ this is already a contradiction, so $m\ge3$.)
+(3) Incidence graph. Build a bipartite graph $B$ with sides the triangles of $F$ and of $F'$, and one edge
+of $B$ for each vertex $v$ of $G$, joining $\tau(v)$ to $\sigma(v)$. Step (2) says $B$ is simple and
+cubic; it is bipartite by construction. Edges of $G$ are exactly the pairs of vertices sharing a triangle,
+i.e.\ pairs of $B$-edges sharing a $B$-endpoint, so $G\cong L(B)$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/r2\_01\_aabc25\_struct.md} \S2, Lemma 1,
+steps (1)--(3); full proof in campaign records. The structural reduction appears to have no precedent; the
+exhaustive verification below covers every potential counterexample precisely because of it.}
+
+\begin{proposition}[The two complementary $2$-factors of a line graph]\label{prop:antiphi}
+Let $B$ be a cubic bipartite simple graph, let $W\cong L(B)$, let $M$ be a perfect matching of $B$, and let
+$\sigma$ be an orientation of $M$, with $-\sigma$ the reversed orientation. Then $E(\Phi(\sigma))$ and
+$E(\Phi(-\sigma))$ \emph{partition} $E(W)$, and both $\Phi(\sigma)$ and $\Phi(-\sigma)$ are triangle-free
+$2$-factors of $W$ (all cycles of length $\ge4$).
+\end{proposition}
+\begin{proof}[Proof sketch]
+For each $z\in V(B)$ let $\{e_z,f_z,g_z\}$ be the three incident edges, $e_z$ being the matched one, and
+let $P_z$ be the three pairs of edges sharing $z$. Since $B$ is simple, each edge of $W=L(B)$ is a pair of
+$B$-edges sharing a \emph{unique} endpoint, so the $P_z$ partition $E(W)$. Now read pointwise: at a tail of
+$\sigma$, $\Phi(\sigma)$ takes the pairs $\{e_zf_z,e_zg_z\}$; at a head, it takes $\{f_zg_z\}$; and
+$\Phi(-\sigma)$ does the opposite. In both cases the two factors take distinct pairs summing to three per
+$P_z$, so their edge sets partition $E(W)$. A degree check at each $B$-edge --- a matched edge gets $2+0$
+neighbours, an unmatched edge $1+1$ --- shows both are $2$-regular and spanning. For triangle-freeness: a
+triangle of $L(B)$ corresponds to three $B$-edges meeting at one point, and at that point one of the three
+pairs is precisely the pair not taken by the factor in question; $B$ has no triangles of its own, being
+bipartite.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/r2\_01\_aabc25\_struct.md} \S2,
+Proposition 6 and steps (4)--(8); full proof in campaign records. Positioning: the \emph{existence}
+statement --- a cubic graph has a perfect matching iff its line graph admits a triangle-free
+$2$-factorisation --- is an observation of Kouider--Sabidussi \cite{KS95}, and the case proved here (cubic
+bipartite $B$) is a direct special case of it via Hall's theorem; we claim no priority for it. The explicit
+pointwise partition $\Phi(\sigma)\sqcup\Phi(-\sigma)$, its ``for every orientation'' quantifier, and the
+counting corollary below are the contribution claimed here. See also Bertram--Hor\'ak \cite{BH97} for a
+polynomial decision algorithm for the general $4$-regular case.}
+
+\begin{theorem}[Six-regular graphs, strengthened bound]\label{thm:sixreg}
+Every $6$-regular simple graph $G$ with $|V(G)|=n=3m\ge9$ satisfies $\ce(G)\le n-2$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Take any $2$-factorisation $G=F\sqcup F'\sqcup F''$ (Lemma~\ref{lem:petersen2f}, $k=3$).
+Case 1: $G$ has no triangle $2$-factor. Then none of the three factors is a union of triangles, so each
+contains a cycle of length $\ge4$ and has at most $1+\lfloor(n-4)/3\rfloor=m-1$ components; the total is at
+most $3m-3=n-3$.
+Case 2: $G$ has a triangle $2$-factor $S$, with exactly $m$ parts, and $H:=G-E(S)$ is a $4$-regular
+spanning simple graph on $n\ge9$ vertices.
+--- If $H$ has a triangle $2$-factor $T$, then $S$ and $T$ are edge-disjoint triangle $2$-factors of a
+$4$-regular spanning subgraph $W=S\sqcup T$, and the rigidity lemma gives $W\cong L(B)$;
+Proposition~\ref{prop:antiphi} splits $W$ into two triangle-free $2$-factors with at most $m-1$ parts each,
+while $R:=G-E(W)$ is a $2$-factor with at most $m$ parts. Total: $(m-1)+(m-1)+m=3m-2=n-2$.
+--- If $H$ has no triangle $2$-factor, take any $2$-factorisation $H=T\sqcup U$: neither is a triangle
+union, so each has at most $m-1$ parts, and the total is $m+(m-1)+(m-1)=n-2$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/r2\_01\_aabc25\_struct.md} \S3, Theorem
+2$'$; full proof in campaign records. Numerics (Appendix~A): exhaustive verification of the structural
+lemma's full parameter space for $s\le5$ ($832{,}944$ combinations) and the $L(B)$ family $s=3..6$
+($299{,}265$ instances); all $30{,}016$ labelled $6$-regular graphs on $9$ vertices satisfy the bound with
+room to spare --- each has exact $\ce=3$.}
+
+\begin{theorem}[Conjecture 6.2 of \cite{AABC25}]\label{thm:sixregconj}
+Every $6$-regular simple graph decomposes into three edge-disjoint spanning $2$-factors, one of which has
+a component with at least $4$ vertices.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Three cases. If $3\nmid n$, no triangle $2$-factor exists (it would force $3\mid n$), so any
+$2$-factorisation from Lemma~\ref{lem:petersen2f} has a non-triangle factor, which contains a cycle of
+length $\ge4$. If $3\mid n$ and $G$ has no triangle $2$-factor, the same applies to every factor of any
+$2$-factorisation. If $3\mid n$ and $G$ has a triangle $2$-factor $S$, then $|V(G)|=n\ge9$ and
+$H:=G-E(S)$ is $4$-regular on at least $5$ vertices; by the contrapositive of
+Lemma~\ref{lem:fourreg}, $H$ has a $2$-factor $S'$ containing a cycle of length $\ge4$, and
+$S\sqcup S'\sqcup T$ with $T:=H-E(S')$ is the required decomposition.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/r2\_01\_aabc25\_struct.md} \S3, Theorem 3
+(the three-case decision written out in full); full proof in campaign records.}
+
+\begin{corollary}[Six-regular graphs]\label{cor:sixregall}
+Every $6$-regular simple graph $G$ on $n$ vertices satisfies $\ce(G)\le n-1$. If $n\equiv0\pmod3$ this
+holds in the stronger form $\ce\le n-2$ (Theorem~\ref{thm:sixreg}); if $n\equiv2\pmod3$ it holds in the
+form $\ce\le n-2$ as well, via $3\lfloor n/3\rfloor=n-2$.
+\end{corollary}
+
+\begin{corollary}[Even graphs of maximum degree six]\label{cor:evend6}
+Every even graph with $\Delta\le6$ satisfies $\ce(G)\le n-1$: apply Theorem~\ref{thm:d6even}(ii) away from
+the exceptional case and Corollary~\ref{cor:sixregall} in it. Together with Theorem~\ref{thm:counterex}
+this locates the failure of the $n-1$ budget at $\Delta\le6$ exactly in the presence of odd degrees.
+\end{corollary}
+
+\begin{remark}[Tightness is open, and the truth is far lower]\label{rem:sixregtight}
+We do not know whether $n-1$ is attained in the even world: the path $P_n$ has $\ce(P_n)=n-1$ but is not
+an even graph, so it is no witness here. The computational record suggests the truth is far below the
+proof: all $6$-regular graphs on $9$, $10$ vertices have exact $\ce=3$, and $n=12$ has $7{,}849$
+isomorphism classes whose decomposition ledgers reach $n-2=10$ pieces in only $5$ classes --- and even
+those have exact $\ce=3$. The proof closes at $n-2$ through the ledger, not through the truth. At degree
+$8$ the analogous bound is immediate from the all-$2$-factors-isomorphic analysis of \cite{AAFJLS04}, as
+noted in \cite{AABC25}; degree $6$ is the last even degree where a structural argument of the kind given
+here is needed. Whether the two residual configurations of Theorem~\ref{thm:sixreg}'s case analysis can be
+pushed to $n-3$ is registered as an open problem in Section~\ref{sec:open}.
+\end{remark}
+
+\subsection{The general $\Delta\le6$ question}
+
+\begin{theorem}[General $\Delta\le6$ graphs]\label{thm:d6tjoin}
+If $\Delta(G)\le6$ and $\tau=\tau(G)$, then $\ce(G)\le\tau+\lfloor(m-\tau)/3\rfloor$ with $m\le3n$.
+Consequently: $\tau\le 3n/4\Rightarrow\ce\le 3n/2$; $\tau\le n/2\Rightarrow\ce\le 7n/6$; and always
+$\ce\le 5n/3-2/3$.
+\end{theorem}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_05\_delta6.md} Thm.~D, via
+Lemma~\ref{lem:tjoin} with $m\le3n$.}
+
+\begin{remark}[An honest gap]\label{rem:danger}
+We do not claim $\ce\le n$ for all $\Delta\le6$. The even case is now closed
+(Corollary~\ref{cor:evend6}), but when the graph has odd degrees and $\tau\in(3n/4,\,n-1]$ with
+$m>3n-2\tau$ --- long $T$-joins on dense graphs --- no proof of $\ce\le n$ is known to us; this mirrors the
+``tree-absorbing rewind'' obstruction identified for $\Delta=5$ in the records. The counterexample of
+Theorem~\ref{thm:counterex} sits exactly in such a regime: the extremal accounting cannot close, yet the
+true value is $\ce=n$.
+\end{remark}
+
+\begin{remark}[The $K_{3,n-3}$ mechanism]\label{rem:k3n}
+For $n\ge7$, $\ce(K_{3,n-3})\ge n-1$: the $n-3$ vertices of degree $3$ force $n-3$ single edges, and the
+remaining $2(n-3)$ edges exceed the capacity $n$ of a single cycle, forcing at least two cycle parts; the
+exact values $\ce(K_{3,4})=6$, $\ce(K_{3,5})=7$, $\ce(K_{3,6})=8$ all equal $n-1$. The case $n=6$ is a
+genuine exception: $\ce(K_{3,3})=4=n-2$, because the six residual edges fit in a single Hamilton cycle.
+This parity mechanism, ``upgraded'' by the triangle of Theorem~\ref{thm:counterex}, is the principal source
+of $\Delta\le6$ lower bounds.
+\end{remark}
+
+\section{Odd degrees: the cubic case of Conjecture 6.4}\label{sec:odd}
+
+The paper \cite{AABC25} also studies a relaxation. An \emph{$\fre$-decomposition} of $G$ is a partition of
+$E(G)$ into blocks, each block being the edge set of a $2$-regular subgraph (a union of vertex-disjoint
+cycles) or a single edge, and $\fre(G)$ is the minimum number of blocks. Every $\ce$-decomposition is an
+$\fre$-decomposition, so $\fre(G)\le\ce(G)$; what the relaxation buys is that several cycles may share one
+block. Conjecture 6.3 of \cite{AABC25} proposes $\fre(G)=O(n)$ for all graphs, and Conjecture~6.4 there
+proposes $\fre(G)\le n-1$ for every $(2k+1)$-regular graph. The even-regular case is settled there
+(Thm.~1.5: $\fre(G)=\Delta/2$ for an even graph of maximum degree $\Delta$), and the same paper observes
+that a perfect matching settles the odd-regular case: taking the matching as single edges, $\fre\le n/2+k$.
+The open core is thus the odd-regular graphs \emph{without} a perfect matching. This section settles the
+cubic case completely.
+
+\begin{theorem}[Reduction identity]\label{thm:frered}
+For every graph $G$ with $m$ edges,
+\[
+\fre(G)\;=\;\min_{H}\ \bigl(m-|E(H)|+\Delta(H)/2\bigr),
+\]
+where the minimum is over even subgraphs $H\subseteq G$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+($\le$) Given $H$, the construction behind \cite{AABC25} Thm.~1.5 produces $\Delta(H)/2$ spanning
+subgraphs of $H$, each of every-vertex-degree $0$ or $2$; together with the $m-|E(H)|$ edges of $G-H$ as
+single edges this is an $\fre$-decomposition with the displayed count. ($\ge$) From an optimal
+$\fre$-decomposition with $t$ two-regular blocks and $s$ single edges, let $H$ be the union of the blocks.
+A vertex lying in $r_v$ blocks has $\deg_H(v)=2r_v$, so $H$ is even and $\Delta(H)/2=\max_v r_v\le t$;
+hence $s+\Delta(H)/2\le s+t=\fre(G)$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{front\_tre/attack\_tre.md} \S3, Theorem A; full proof
+in campaign records.}
+
+Let $p(G)$ denote the minimum size of a parity subgraph with $T=V(G)$, and let $p_2(G)$ denote the maximum
+size of an even subgraph. Two immediate consequences of Theorem~\ref{thm:frered}: if $G$ is $(2k+1)$-regular
+then $\fre(G)\le p(G)+k$ (remove a minimum parity subgraph); and on cubic graphs the formula sharpens to an
+equality, since $G-F$ has degrees in $\{0,2\}$:
+
+\begin{theorem}[Cubic exact formula]\label{thm:cubicexact}
+If $G$ is cubic, then $\fre(G)=p(G)+1$, and $p(G)=m-p_2(G)$; consequently Conjecture~6.4 of
+\cite{AABC25} for cubic $G$ is equivalent to $p_2(G)\ge n/2+2$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+For a minimum parity subgraph $F$, the complement $G-F$ is an even subgraph of a subcubic graph, hence a
+disjoint union of cycles --- a single two-regular block when nonempty --- giving $\fre\le p+1$. Conversely
+$G$ contains a cycle $C$, and $G-E(C)$ is an odd factor of size $m-|C|\le m-3$, so $p\le m-3<m$ and the
+minimum in Theorem~\ref{thm:frered} is never attained with $H=\emptyset$; the exact value is $p+1$. For
+$p=m-p_2$: the complement of a maximum even subgraph is a minimum $T$-join and vice versa.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{front\_tre/attack\_tre.md} \S3, Corollary A3; full
+proof in campaign records.}
+
+The perfect-matching case of the cubic conjecture is now immediate ($\fre\le n/2+1\le n-1$ for $n\ge4$),
+and this is the observation already recorded in \cite{AABC25}. The substance is the graphs without a
+perfect matching. Here the Petersen theorem in its contrapositive form is the structural entry point: a
+cubic graph without a perfect matching has a bridge. Bridges do not occur inside blocks, and $T$-joins
+decompose over the block tree --- which is what the next two results exploit.
+
+\begin{lemma}[Bridge decomposition]\label{lem:bridgedecomp}
+Let $G$ be connected cubic with bridge set $Br$, $B=|Br|$, and let $X_1,\dots,X_k$ be the components of
+$G-Br$, each bridgeless and subcubic; write $b_v$ for the number of bridges at $v$ and let
+$T_i=\{v\in X_i: b_v\ \mathrm{even}\}$. Then $|T_i|$ is even, and
+\[
+p(G)\;=\;\sum_i q(X_i)\;+\;B,\qquad q(X_i):=\min\{|F|:F\ \text{a $T_i$-join in $X_i$}\}.
+\]
+\end{lemma}
+\begin{proof}[Proof sketch]
+Every bridge lies in every odd spanning factor: if a bridge $e$ cuts off $A$, then $|A|$ is odd
+(since $3|A|-1=2e(A)$), and $F\cap E(A)$ would have all $|A|$ vertices odd --- impossible by the handshake
+lemma. So $B$ edges are forced. Within $X_i$, the requirement $\deg_F\equiv1\pmod2$ becomes
+$\deg_{F\cap X_i}\equiv1+b_v\pmod2$, i.e.\ $F\cap X_i$ is a $T_i$-join; and $|T_i|$ is even because
+$3n_i-\sum_v b_v=2e(X_i)$ forces $\sum b_v\equiv n_i\pmod2$. Both directions are now immediate, and the
+minima add.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{front\_tre/attack\_tre.md} \S4, Theorem C; full proof
+in campaign records.}
+
+\begin{lemma}[Piece lemma; Choi--Kim--Kostochka--Park--West]\label{lem:piece}
+Let $X$ be connected, bridgeless and subcubic with $n\ge3$ vertices. Then $p_2(X)\ge n/2+3/2$. More
+generally, in the setting of Lemma~\ref{lem:bridgedecomp}, writing $\Phi(X):=n-q(X)$ and $b$ for the
+number of bridge-ends at vertices of $X$, one has $\Phi(X)\ge b/2+3/2$.
+\end{lemma}
+\begin{proof}[Proof sketch]
+On subcubic graphs, maximum even subgraphs are exactly maximum $2$-regular subgraphs counted by edges, so
+$p_2$ equals the quantity $f_2$ of \cite{CKKPW19}, whose Theorem 1.3 gives
+$f_2\ge n-\max\{0,(d+c-1)/2\}$ in terms of the number $c$ of cut-edges and the $1$-deficit
+$d=3n-2m$. Bridgelessness gives $c=0$, and the three branches are: all degrees $2$ (a cycle:
+$p_2=n$); all degrees $3$ ($d=0$: $p_2=n$, which is Petersen's $1$-factor theorem); mixed
+($d\ge1$ and $m\ge n+1$, giving $p_2\ge n-(d-1)/2=m-n/2+1/2\ge n/2+3/2$). For the corollary form,
+$X-H$ is a $T$-join for $H$ maximum even, so $q\le m-p_2$ and
+$\Phi=n-q\ge n-m+p_2\ge(3n-2m)/2+3/2=b/2+3/2$, using $\sum_v\deg_X=3n-b=2m$.
+\end{proof}
+\proofsrc{This is a quoted published theorem plus a conversion derived in campaign records,
+\texttt{front\_tre/attack\_tre.md} \S4 (Lemma A = \cite{CKKPW19} Thm.~1.3, whose own proof uses Edmonds'
+weighted matching and the theorem of Plesn\'ik; Lemma B = the conversion; full details in campaign
+records). The tight example is $K_{2,3}$: $p_2=4=n/2+3/2$.}
+
+\begin{lemma}[Assembly]\label{lem:assembly}
+Let $G$ be connected cubic without a perfect matching, with block tree having $k$ blocks ($B=k-1$ bridges):
+$r$ non-trivial blocks on $n\ge4$ vertices, $c$ triangle blocks, and $t$ single-vertex blocks. Then
+$r\ge c+t+2$, and $\sum_X\Phi(X)\ge B+2$.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Degree conservation over the block tree gives $\sum_X b(X)=2B=2(k-1)$, where $k=r+c+t$ is the number of
+blocks; every block has $b\ge1$, and triangle and single-vertex blocks have $b=3$. Hence
+$2(r+c+t-1)\ge 3(c+t)+r$, i.e.\ $r\ge c+t+2$. For the ledger: non-trivial blocks give $\Phi\ge b/2+3/2$ by
+Lemma~\ref{lem:piece}, triangle blocks give $\Phi=3=b/2+3/2$, single-vertex blocks give $\Phi=1$; summing,
+\[
+\textstyle\sum_X\Phi\ \ge\ \sum_{\mathrm{pos}}(b_i/2+3/2)+3c+t\ =\ B+1.5r+1.5c-0.5t\ \ge\ B+2,
+\]
+the last step by $r\ge c+t+2$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{front\_tre/attack\_tre.md} \S4 (assembly lemma); full
+proof in campaign records.}
+
+\begin{theorem}[Cubic graphs]\label{thm:cubicpmfree}
+Every connected cubic graph without a perfect matching satisfies $p(G)\le n-2$, hence
+$\fre(G)=p(G)+1\le n-1$. Together with the perfect-matching case, every cubic graph $G$ on $n\ge4$
+vertices satisfies $\fre(G)\le n-1$: Conjecture~6.4 of \cite{AABC25} holds for $k=1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Parts never straddle components, so $\fre$ is additive over components and we may assume $G$ connected.
+If $G$ has a perfect matching, remove it: $\fre\le n/2+1\le n-1$ for $n\ge4$. Otherwise, by Petersen's
+theorem in the contrapositive, $G$ has a bridge, so $k\ge2$. Lemma~\ref{lem:bridgedecomp} writes
+$p=\sum_i q_i+B$, and $p=\sum_i q_i+B=n-\sum_X\Phi(X)+B$, so the assembly lemma gives
+$p\le n-(B+2)+B=n-2$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{front\_tre/attack\_tre.md} \S4, Theorem D; full proof
+in campaign records. Honest scope: the proof relies on the published Theorem 1.3 of \cite{CKKPW19}; the
+contribution claimed here is the reduction chain (Theorem~\ref{thm:frered},
+Lemma~\ref{lem:bridgedecomp}, Lemma~\ref{lem:assembly}), the exhaustive verification below, and the
+structural analysis of the small counterexamples. Computational verification: all $9{,}588$ connected
+odd-regular graphs on $n\le12$ vertices (degrees $3$ through $11$), and all connected cubic graphs on
+$n=14,16,18$ vertices ($509$, $4{,}060$, $41{,}301$ graphs), with zero violations; all $60{,}077$
+bridgeless subcubic graphs on $n\le14$ vertices satisfy Lemma~\ref{lem:piece} with a minimum margin of
+exactly $3/2$, attained uniquely by $K_{2,3}$ (Appendix~A).}
+
+\begin{remark}[The smallest imperfect cubic graphs]\label{rem:minpmfree}
+The minimum order of a cubic graph without a perfect matching is $16$, and the extremal graph is unique;
+the minimality is classical --- it follows from work of Errera and of Chartrand--Goldsmith--Schuster
+\cite{CGS79} --- and our contribution is the enumeration confirming uniqueness up to isomorphism for all
+orders $\le18$, plus the structure: the extremal graph is three subdivided-$K_4$ blades joined to one
+central vertex by three bridges, and it has $p=n/2+1$. In fact every perfect-matching-free cubic graph
+found in the exhaustive sweeps has $p=n/2+1$, with the excess over $n/2$ coming entirely from
+single-vertex blocks. For $k\ge2$ the whole question reopens: without regularity $3$, ``no perfect
+matching'' no longer forces a bridge, and the correct cut structure is that of Tutte sets; a
+Tutte-obstruction family of $5$-regular graphs (orders $36$ to $146$) satisfies $p\le n-3$ with room to
+spare, and the general case is open.
+\end{remark}
+
+\section{Bounded degeneracy}\label{sec:degeneracy}
+
+\begin{theorem}[Degeneracy $2$: the exact frontier]\label{thm:deg2}
+Let $G$ be $2$-degenerate with $c=c(G)$ components and $s(G)$ non-tree components. Then
+$\ce(G)\le n-c-s(G)\le n-1$, with $\ce(G)=n-1$ if and only if $G$ is a tree. In particular every
+$K_4$-minor-free (equivalently, treewidth-$\le2$) graph satisfies $\ce(G)\le n-1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Induction on connected $G$ via a vertex $v$ with $\deg(v)\le2$. A bridge at $v$ is charged exactly: it
+becomes a forced single edge. If the two $v$-edges' other endpoints $u,w$ are adjacent, both edges are
+absorbed into the part containing $uw$ at no cost; if not, dissolve $v$ into the chord $uw$ (solvability
+preserves $2$-degeneracy), paying at most one. Components add by Corollary~\ref{cor:excess}'s ledger.
+Non-tree components pay their extra $1$; hence equality in $\ce\le n-1$ occurs exactly for connected
+forests, i.e.\ trees.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_08\_degeneracy.md} Thm.~2.1 with
+Lemma 2.3 (dissolution lemma); $725$ randomized $2$-degenerate instances machine-checked (Appendix~A).}
+
+\begin{theorem}[Degeneracy $3$: an upper bound]\label{thm:deg3ub}
+If $G$ is $3$-degenerate and $n\ge3$, then $\ce(G)\le\lfloor(5n-8)/3\rfloor$; connectedness may be replaced
+by the sharper form with $n-c(G)$. More generally, $d$-degenerate graphs satisfy
+$\ce(G)\le\lfloor((d+2)n-d(d+1)/2-2)/3\rfloor$ and $\ce(G)\le m$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+A degeneracy ordering gives $m\le dn-d(d+1)/2$; combine with Lemma~\ref{lem:tjoin} and $\tau\le n-c$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_08\_degeneracy.md} Thm.~3.3 (T3a),
+using the independently re-proven Lemma~\ref{lem:tjoin}.}
+
+\begin{theorem}[Exact values for $K_{3,q}$]\label{thm:k3q}
+For every $q\ge2$,
+\[
+\ce(K_{3,q})=\Bigl\lceil \tfrac{4q}{3}\Bigr\rceil .
+\]
+Consequently $\sup\{\ce(G)/n: G\ \text{\emph{3-degenerate}}\}\ge 4/3$, attained along $q\equiv0\pmod 3$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Upper bound: split $K_{3,q}$ into blocks $K_{3,3}$ ($C_6$ plus $3$ single edges, $4$ parts), handling
+$q=3k,3k+1,3k+2$ with tail blocks $K_{3,4}$ ($6$ parts) and $K_{3,2}=C_4$ plus $2$ single edges
+($3$ parts); each case sums to $\lceil4q/3\rceil$. Lower bound (slot--rate lemma): every cycle $C$ in
+$K_{3,q}$ has $|C|-1\le\tfrac53|C\cap B|$, and each degree-$3$ vertex of the large side feeds at most one
+cycle; hence $\ce\ge 3q-\lfloor\tfrac53 q\rfloor=\lceil 4q/3\rceil$.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_08\_degeneracy.md} Thm.~3.5 (T3c); an
+arithmetic slip in the $q\equiv2$ line of the first draft was corrected in review ($K_{3,2}$ contributes
+$3$ parts, not $1$), the total being unchanged.}
+
+\begin{conjecture}[Matching upper bound for $d=3$]\label{conj:t3b}
+Every $3$-degenerate graph satisfies $\ce(G)\le\lfloor(4n-6)/3\rfloor$.
+\end{conjecture}
+\begin{remark}
+Conjecture~\ref{conj:t3b} is equivalent, via the peeling ledger, to a $\tau\le(4n-6-m)/2$-type bound on
+$3$-cores; $630$ randomized $3$-degenerate instances with exact $\ce$ and exact $\tau$ showed zero
+violations. The state of knowledge here deserves emphasis: the lower bound $4/3$ for $\sup\ce/n$ is
+proved, with an exact extremal family (Theorem~\ref{thm:k3q}); the matching upper bound is open, and the
+best proved upper bound is $5/3$ (Theorem~\ref{thm:deg3ub}).
+\end{remark}
+
+\begin{theorem}[Failure at every $d\ge3$]\label{thm:degex}
+For every $d\ge3$ there are $d$-degenerate graphs, on unboundedly many vertices, with $\ce(G)>n-1$:
+(i) $d=3$: $\ce(K_{3,7})=10=|V(K_{3,7})|$;
+(ii) $d=3$, non-bipartite: for $q\ge14$, $G_q=K_{3,q}+xy$ (one edge inside the large side) satisfies
+$\deg(G_q)=3$ and $\ce(G_q)\ge(4q-7)/3>|V(G_q)|-1$;
+(iii) $d=5$: $\ce(K_{5,11})\ge16>15$;
+(iv) in general, for odd $d=2k+1$ and $q$ large,
+$\ce(K_{2k+1,q})\ge\frac{3k+1}{2k+1}q-O(1)>n-1$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+All items use the slot--rate lemma: if every cycle $C$ satisfies $|C|-1\le\rho|C\cap B|$, then any
+decomposition has at least $m-\rho\sum_{v\in B}\lfloor\deg(v)/2\rfloor$ parts, since each $v\in B$ lies in
+at most $\lfloor\deg(v)/2\rfloor$ cycles. In $K_{3,q}$ every cycle has $|C|-1\le\tfrac53|C\cap B|$ and the
+large side supplies exactly $q$ slots; adding $xy$ relaxes the rate inequality only within the same
+constant, and $\deg(x)=\deg(y)=4$ adds two slots, whence (ii). For (iv) the constant
+$(3k+1)/(2k+1)\to3/2$ matches the global Erd\H{o}s lower bound, so these families are extremal
+simultaneously for their degeneracy level and for the whole problem.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_08\_degeneracy.md} Thms.~4.2--4.3, with
+machine certificates: for $K_{3,14}+e$ all $3{,}324$ cycles were enumerated for the rate inequality
+($\ce\in[17,21]$), for $K_{5,11}$ all $794{,}530$ cycles ($\ce\ge16$); $\ce(K_{3,7})=10$ by exact solver
+(Appendix~A).}
+
+\begin{remark}[The degeneracy frontier]\label{rem:frontier}
+Within the degeneracy hierarchy the picture is complete: $n-1$ holds for all $2$-degenerate graphs
+(Theorem~\ref{thm:deg2}) and fails by arbitrarily large margins at every $d\ge3$ (Theorem~\ref{thm:degex}).
+This kills any goal of the shape ``degeneracy $\le6$ $\Rightarrow$ $n-1$ up to finitely many graphs''.
+Note the complementarity with Section~\ref{sec:delta6}: the counterexample there lives in the
+$\Delta$-bounded world, Theorem~\ref{thm:degex} in the degeneracy-bounded, $\Delta$-unbounded one; the
+common enemy is the odd complete-bipartite kernel.
+\end{remark}
+
+\section{Extremal examples and the shape of $f(n)$}\label{sec:extremal}
+
+\begin{theorem}[Complete bipartite lower bounds; restated]\label{thm:kst}
+Let $1\le s\le t$. Then: (i) if $s$ is odd, $\ce(K_{s,t})\ge t(3s-1)/(2s)$; (ii) if $s$ is even and $t$ is
+odd, $\ce(K_{s,t})\ge(2s+t-1)/2$; (iii) if $s,t$ are even, $\ce(K_{s,t})\ge t/2$. In particular
+$f(n)\ge(3/2-o(1))n$. No novelty is claimed: case (i) and the $(3/2-o(1))n$ consequence are known
+\cite{E83,BM22}, and are re-derived here by a degree-budget argument; cases (ii)--(iii) are footnote-level
+refinements recorded in the archive.
+\end{theorem}
+\proofsrc{Complete proof in campaign records, \texttt{notes/attack\_bipartite.md} Thm.~1.1 (with small-value
+table: $\ce(K_{2,5})=4$, $\ce(K_{3,4})=6$, $\ce(K_{3,7})=10$, $\ce(K_{5,5})=7$, exact).}
+
+\begin{theorem}[A non-bipartite exact family]\label{thm:joinstar}
+Let $G_c=K_2\vee K_{1,c-1}$ (two universal vertices joined to a star with $c-1$ leaves), $c\ge3$,
+$n=c+2$. Then
+\[
+\ce(G_c)=c-1+\Bigl\lceil\tfrac{c+2}{3}\Bigr\rceil = n-3+\lceil n/3\rceil\approx\tfrac43 n .
+\]
+\end{theorem}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_03\_constant.md} Thm.~M2 (two-sided
+accounting on the savings identity; exact for all $c$, cross-checked at $c=2,\dots,8$ with multiple
+realizations and dual certificates).}
+
+\begin{corollary}\label{cor:fn}
+For every $n\ge7$ there is an $n$-vertex graph with $\ce(G)\ge n$; i.e.\ $f(n)\ge n$ for all $n\ge7$ (with
+$f(10)\ge11$, $f(11)\ge12$). Two independent routes are known: Theorem~\ref{thm:joinstar} and the
+$K_{3,q}$ route (Theorem~\ref{thm:k3q} for $n\ge10$).
+\end{corollary}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_03\_constant.md} Cor.~N.1.}
+
+\begin{proposition}[Small $4$-regular graphs]\label{prop:4reg}
+Every $2$-connected $4$-regular graph on $n\le8$ vertices satisfies $\ce(G)\le n/2-1$.
+\end{proposition}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_04\_delta5\_savings.md} C2: $n=6$ has
+a unique isomorphism class; $n=8$ follows from Dirac's theorem ($2\delta=8\ge n$, so the graph is
+Hamiltonian, giving $1+\lfloor 8/3\rfloor=3$). The case $n\ge10$ is honestly open: it would require a cycle
+of length $\ge n/2+6$ in the residual.}
+
+\begin{remark}[Where does $n-1$ bite?]\label{rem:bite}
+Three structurally different mechanisms push $\ce$ to its budget: bridges (trees); parity at density (even
+complete graphs, Theorem~\ref{thm:complete}); and concentrated odd degree in near-bipartite kernels
+($K_{3,4}$, $K_{3,q}$: Theorems~\ref{thm:k3q} and \ref{thm:counterex}). A structural characterisation of
+the graphs with $\ce(G)=n-1$ is a central open problem (Section~\ref{sec:open}); the tight-instance census
+for $\Delta\le5$, $n\le7$ (seven $2$-connected isomorphism classes) shows that all small tight instances
+fall into the third mechanism or are small dense graphs.
+\end{remark}
+
+\section{Anatomy of the $\log^*$ barrier}\label{sec:bm}
+
+We recall the skeleton of \cite{BM22} in the form needed below. A graph $G$ is an
+\emph{$(\varepsilon,s)$-expander} if $|N_{G-F}(U)|\ge\varepsilon|U|/\log^2 n$ for every $U$ with
+$|U|\le 2n/3$ and every $F$ with $|F|\le s$. BM splits the vertex set into parts that are
+$(\varepsilon,s)$-expanders, at a cost of $4sn\log n$ deleted edges with $s=\log^{273}n$, then extracts
+cycles from each expander, the remainder after each extraction round having average degree at most
+$f(d)=O(\log^{274}d)$; iterating against a fresh tower reference (``tower reset'') gives $O(\log^* n)$
+rounds and hence $O(n\log^* n)$ total. All statements below are \emph{within this architecture}: they
+concern what any refinement of the parameters, or of the single-step density lemma, can achieve. They are
+not unconditional lower bounds against every conceivable algorithm.
+
+\begin{proposition}[Fixed-point lock-in]\label{prop:lockin}
+Let $f\colon[d_0,\infty)\to[1,\infty)$ be nondecreasing.
+\begin{enumerate}
+\item[(a)] If $f$ has a (necessarily superconstant) fixed point $d^*>d_0$ with $f(d^*)\ge d^*$ --- as
+happens for every $f(d)=(\log d)^c$, $c\ge1$; for $c=274$ the fixed point of $x=274\ln x$ is
+$x^*\approx2095.4$ --- then naive iteration $f^{i}(n)$ never drops below $d^*$: the single-step lemma alone
+cannot terminate.
+\item[(b)] \emph{(Tower-step condition.)} Suppose there is a monotone $g$ and a constant $C>0$ with
+$f(Cg(t))\le Cg(t/2)$ for all large $t$. Then any decomposition process whose only per-step information is
+``remainder average degree $\le f(\text{current})$'' and which may reset against the original $n$ has depth
+$\le\log^* n+O(1)$. The condition is satisfied by polylogarithmic $f$ (this is exactly BM's bookkeeping),
+but not in general: for $f(d)=d/2$ the depth is $\Theta(\log n)$, and no reset changes that.
+\end{enumerate}
+\end{proposition}
+\begin{proof}[Proof sketch]
+(a) Monotone iteration converges down to the unique fixed point. (b) Induction:
+$d_i\le Cg(\log^{[i]}n)$, each step lowering the tower by one level; this abstracts the induction in
+\cite{BM22}, verified against the source.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_12\_expansion.md} Prop.~12.1. Part
+(b)'s statement is the reviewer-narrowed form: for general $f$ the claim is false, and the tower-step
+hypothesis is load-bearing.}
+
+\begin{proposition}[The phase transition is a mirage]\label{prop:mirage}
+Let $\tilde f(d)=2^{(\ln d)^{\theta}}$, $0<\theta<1$. Then the naive iteration depth of $\tilde f$ from $n$
+is $\Theta(\ln\ln\ln n/\ln(1/\theta))$, which exceeds $\log^* n$ for every $n$ with $\log^*n\ge4$; and
+$\log^*n=o(\log\log\log n)$. Consequently, a single-step lemma with remainder $2^{(\log d)^\theta}$ would
+yield $O(n\log\log\log n)$ --- a bound \emph{weaker} than the existing $O(n\log^* n)$. The
+``$2^{(\log d)^\theta}$ rung'' sits \emph{between} the CFS rung ($d^{1-\delta}$, depth
+$\Theta(\log\log n)$) and the BM rung (polylog, depth $\log^* n$): it is the next rung down, not up.
+\end{proposition}
+\begin{proof}[Proof sketch]
+Set $x_i=\ln\ln\tilde f^{\,i}(n)$; then $x_{i+1}=\theta x_i+o(1)$. For the comparison, unwind the tower:
+$\log^*n=k$ forces $n>2\uparrow\uparrow(k-1)$, so $\ln\ln\ln n\gtrsim 2\uparrow\uparrow(k-4)$. Numerically
+at $k=4$: $\ln\ln n\approx10.72$, $\ln\ln\ln n\approx2.37$, depth $\approx22.5>4$. The moral: iteration
+depth is a dynamical quantity, and must not be inferred from the pointwise size of the remainder map.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_12\_expansion.md} Prop.~12.2 (constants
+corrected in review: crossover $\ln d\approx5607$ for $\theta=0.9$; fixed point $x^*\approx2095.4$, not
+$274\ln274$). An earlier, opposite interpretation of an archive phase-transition claim was withdrawn; see
+Acknowledgments.}
+
+\begin{proposition}[Self-improvement is impossible by deletion alone]\label{prop:selfrobust}
+\begin{enumerate}
+\item[(a)] If $G-F$ is an $(\varepsilon,s)$-expander for some $F\subseteq E(G)$, then $\delta(G)\ge s+1$.
+Hence no graph of minimum degree $\le s$ can be turned into an $(\varepsilon,s)$-expander by deleting
+edges.
+\item[(b)] \emph{(Finite witness, downgraded form.)} The path $P_4$ is an $(\varepsilon_0,0)$-expander for
+every $0<\varepsilon_0\le 24/25$ (natural logarithms) and has $\delta(P_4)=1$; this is verified by
+exhaustive check of all admissible vertex subsets.
+\item[(c)] Combining (a) and (b): there exist minimum-degree-$1$ $(\varepsilon_0,0)$-expanders that admit
+no edge-deleted $(\varepsilon',s)$-expander for any $s\ge1$. In BM's architecture, vertex splitting plus
+edge deletion is a necessity, not a technical choice.
+\end{enumerate}
+\end{proposition}
+\begin{proof}[Proof sketch]
+(a) Delete, at a minimum-degree vertex $v$ of $G-F$, all its incident edges; expansion applied to
+$U=\{v\}$ is violated unless $\deg_{G-F}(v)\ge s+1$. (b) For $N=4$, $\log^2N=(\ln4)^2\approx1.92$; the
+worst $2$-subset has $|N(U)|=1\ge\varepsilon_0\cdot2/1.92$ iff $\varepsilon_0\le0.961\ge24/25$. (c) is
+immediate.
+\end{proof}
+\proofsrc{Complete proof in campaign records, \texttt{campaign/lane\_12\_expansion.md} Prop.~12.3(a),
+12.3(b$'$), 12.3(c). The original part (b) claimed an asymptotic family of sparse expanders; it was
+withdrawn after a star-shaped counterexample and an unfixable accounting gap were found, and is replaced
+here by the finite statement (b) only.}
+
+\begin{remark}[Optimality within the architecture]\label{rem:bmopt}
+Within BM's architecture: the parameter $s$ is monotone-constrained along the whole chain (its value
+$s=\log^{273}n$ being forced by the square of the expander-splitting threshold); the deletion price
+$4sn\log n$ is exact; the three-random-classes partition is essential (merging attempts die on closed walks
+that must avoid a forbidden vertex class); and by
+Propositions~\ref{prop:lockin}--\ref{prop:selfrobust} the polylog remainder with tower reset cannot be
+beaten from inside. A formal intermediate rung $f(d)=2\uparrow\uparrow(\theta\log^*d)$ would give
+$O(n\log\log^* n)$, but no implementation path within the BM machine is known. We record these as
+architecture-relative findings.
+\end{remark}
+
+\section{Concluding remarks and open problems}\label{sec:open}
+
+The six-regular bottleneck that motivated Section~\ref{sec:delta6} is resolved. What remains is a short
+list of problems, each with an identified obstruction.
+
+\begin{problem}[Planar graphs]\label{prob:planar}
+Is $\ce(G)\le n-1$ for every planar $G$? Verified by exhaustive enumeration for $n\le6$. The
+strengthening ``$\ce\le n-2$ for all planar $G$ containing a cycle'' is false ($K_4$; and $1{,}273$
+counterexamples at $n=6$), so any proof must exploit savings beyond triangles.
+\end{problem}
+
+\begin{problem}[Torus]\label{prob:torus}
+Is $\ce(G)\le n-1$ for every toroidal $G$? The bound, if true, is sharp
+($\ce(K_{3,4})=\ce(K_{3,5})=\ce(K_{3,6})=n-1$, Theorem~\ref{thm:k3q}) and would subsume the planar problem.
+Eulerian toroidal graphs are settled (Theorem~\ref{thm:eulertorus}).
+\end{problem}
+
+\begin{problem}[Maximum degree five; general degree six]\label{prob:delta56}
+Does $\Delta\le5\Rightarrow\ce\le n-1$ (Problem 6.1 of \cite{AABC25})? And does $\Delta\le6\Rightarrow
+\ce\le n$? The even case of the latter is settled at $n-1$ (Corollary~\ref{cor:evend6}); what remains is
+the ``long $T$-join'' danger zone of Remark~\ref{rem:danger}.
+\end{problem}
+
+\begin{problem}[Below $n-2$ for six-regular]\label{prob:sixreg}
+Can the two residual configurations of Theorem~\ref{thm:sixreg} --- a six-regular graph containing two
+edge-disjoint triangle $2$-factors, or one whose $4$-regular remainder has no triangle $2$-factor --- be
+pushed to $\ce\le n-3$? Both require bypassing the per-$2$-factor ledger, which pins a triangle factor at
+$m$ parts. The known truth is far lower ($\ce=3$ at $n=9$), so the question is about the method, not the
+constant.
+\end{problem}
+
+\begin{problem}[A triangle-free $2$-factor in every $4$-regular graph]\label{prob:trianglefree}
+Does every $4$-regular simple graph have a $2$-factor with \emph{no} triangle at all? The proof of
+Proposition~\ref{prop:antiphi} settles the line-graph case; computational reconnaissance on random
+$4$-regular graphs ($n=6..14$) and on the $L(B)$ family found no obstruction. The decision algorithm of
+Bertram--Hor\'ak \cite{BH97} concerns the stronger two-factor version and gives no counting consequence;
+the characterisation results of Hartvigsen \cite{Hartvigsen24} for triangle-free $2$-factors in general
+graphs should reposition this problem and was not yet integrated at the time of writing.
+\end{problem}
+
+\begin{problem}[The $d=3$ constant]\label{prob:d3const}
+Prove or refute Conjecture~\ref{conj:t3b}: is
+$\sup\{\ce(G)/n : G \text{ is $3$-degenerate}\} = 4/3$, with extremal family $K_{3,3k}$? Equivalent to a
+$\tau$-bound on $3$-cores.
+\end{problem}
+
+\begin{problem}[The $4$-core]\label{prob:fourcore}
+Is every graph whose $4$-core is small ``$n-1$-good''? Neither a proof nor a counterexample is known; the
+$K_{\mathrm{odd},q}$ mechanism needs odd degrees that $4$-core candidates lack, making this the recommended
+next target of the degeneracy program.
+\end{problem}
+
+\begin{problem}[Linear constants]\label{prob:linear}
+Does $f(n)\le\lceil3n/2\rceil+O(1)$? Any explicit-constant $O(n)$ bound would be new. The bipartite version
+is governed by Haj\'os' conjecture: an upper bound $\lfloor3n/2\rfloor-1$ for bipartite graphs is
+equivalent to the bipartite case of Haj\'os' cycle conjecture (1968) and is open; Haj\'os' conjecture has
+been verified for all Eulerian graphs on at most $12$ vertices \cite{HNS17}. Known:
+$f(n)\ge(3/2-o(1))n$ \cite{E83,BM22}, $f(n)\ge n$ for $n\ge7$ (Corollary~\ref{cor:fn}).
+\end{problem}
+
+\begin{problem}[Beyond Dirac regularity]\label{prob:beyond}
+For non-regular graphs with $\delta\ge n/2$, is $\ce\le(1+\varepsilon)n$ (or even $\le n$)? Hamilton
+decomposition fails off the regular path; the records locate the obstruction in the critical band.
+Similarly, for $2$-connected $4$-regular graphs, does $\ce\le n/2-1$ extend to all $n\ge10$?
+(Proposition~\ref{prop:4reg}.)
+\end{problem}
+
+\begin{problem}[Odd-regular graphs without perfect matchings, $k\ge2$]\label{prob:oddk}
+Conjecture~6.4 of \cite{AABC25} is now settled for $k=1$ (Theorem~\ref{thm:cubicpmfree}). For $k\ge2$ the
+bridge route dies --- a bridgeless $(2k+1)$-regular graph without a perfect matching is no longer excluded
+by Petersen --- and the correct cut structure is that of Tutte sets; a piece lemma for near-regular blocks
+is the missing instrument. Computational support: Tutte-obstruction families of $5$-regular graphs satisfy
+$p\le n-3$ with large slack.
+\end{problem}
+
+\begin{problem}[Tight instances]\label{prob:tight}
+Characterise the graphs with $\ce(G)=n-1$ (Remark~\ref{rem:bite}); even a structural dichotomy for
+$2$-connected instances would sharpen the block ledger of Section~\ref{sec:blocks}.
+\end{problem}
+
+\begin{problem}[Below $\log^*$]\label{prob:belowlogstar}
+Find any machinery producing a decomposition of $o(n\log^* n)$ parts; formally the rung
+$O(n\log\log^*n)$ exists (Remark~\ref{rem:bmopt}) but has no known implementation. Equivalently: beat the
+tower-reset dynamic of Proposition~\ref{prop:lockin}.
+\end{problem}
+
+\appendix
+\section{Proof status and computational verification}\label{app:verify}
+
+Every theorem in this paper carries, after its statement or proof, a pointer to its complete proof in the
+project records. This appendix summarises the computational verification on which several of those
+records rely. Three principles governed the verification: every constructive step of a proof is
+implemented and checked by a validator independent of the construction logic (degrees, spanningness,
+cycle legality, partition completeness); every exhaustive claim is over a \emph{complete} enumeration, not
+a sample; and every checker was subjected to negative controls (deliberately injected errors, all
+detected). Scripts are maintained with fixed random seeds; three full re-runs of the six-regular suite
+produced byte-identical certificates.
+
+\subsection*{General results}
+
+This subsection covers Sections~\ref{sec:blocks}, \ref{sec:planar}, \ref{sec:degeneracy} and
+\ref{sec:extremal}; the underlying records are the lane and notes files of the campaign archive.
+
+\begin{itemize}
+\item Exact anchors: $\ce(K_4)=3$, $\ce(K_5)=2$, $\ce(K_6)=5$, $\ce(K_7)=3$, $\ce(K_8)=7$ (independent
+exact solvers; the $K_8$ value from a $3.3\times10^7$-step search log). $\ce(K_3\cup K_{3,4})=7$, verified
+four independent ways (DP solver; branch-and-bound; feasibility enumeration at $k=5,6$; an independently
+written solver with zero shared code), plus per-edge certificate checking.
+\item Small planar values: $\ce\le n-1$ verified exhaustively for $n\le6$; the $n-2$ strengthening refuted
+by $1{,}273$ counterexamples at $n=6$ (Problem~\ref{prob:planar}).
+\item Degeneracy: $725$ randomized $2$-degenerate instances machine-checked for
+Theorem~\ref{thm:deg2}; $630$ randomized $3$-degenerate instances with exact $\ce$ and exact $\tau$, zero
+violations of Conjecture~\ref{conj:t3b}.
+\item Machine certificates for Theorem~\ref{thm:degex}: for $K_{3,14}+e$, all $3{,}324$ cycles enumerated
+for the rate inequality, $\ce\in[17,21]$; for $K_{5,11}$, all $794{,}530$ cycles enumerated, $\ce\ge16$;
+$\ce(K_{3,7})=10$ by exact solver.
+\item Exact small values for Theorem~\ref{thm:kst}: $\ce(K_{2,5})=4$, $\ce(K_{3,4})=6$, $\ce(K_{3,7})=10$,
+$\ce(K_{5,5})=7$.
+\end{itemize}
+
+\subsection*{Six-regular graphs}
+
+This subsection covers Section~\ref{sec:delta6}; the records are \texttt{campaign/r2\_01\_*} and
+\texttt{campaign/harden\_round2/}.
+
+\begin{itemize}
+\item Structural family, exhaustive: all marked cubic bipartite $B$ with $s=3..6$ vertices per side ---
+$1$, $24$, $2{,}040$, $297{,}200$, totalling $299{,}265$ instances (counts match the theoretical
+enumeration exactly) --- checked by both the constructive route and an independent brute-force route; in
+addition the $\Phi$-mechanism was force-checked on every one of the $299{,}265$ instances.
+\item Full parameter space: for $s\le5$, \emph{all} $B$, \emph{all} perfect matchings and \emph{all}
+$2^s$ orientations --- $832{,}944$ combinations ($48+3{,}456+829{,}440$) --- zero counterexamples; for
+$s=6$, $300$ sampled $B$. (A two-round total of $1{,}183{,}920$ combinations was accumulated across the
+two verification passes; the figures $829{,}440$ and $832{,}944$ refer to the $s=5$ single tier and the
+$s\le5$ total respectively.)
+\item Anti-$\Phi$ partition (Proposition~\ref{prop:antiphi}): verified on the same $299{,}265$ instances
+plus $660$ random large $B$ ($s$ up to $40$).
+\item Six-regular, $n=9$: all $30{,}016$ labelled graphs (four isomorphism classes of sizes
+$280/5{,}040/4{,}536/20{,}160$, matching the theoretical counts) --- decomposition pieces $\le7=n-2$
+throughout, the $n-2$ assertion enforced by an independent implementation; exact $\ce=3$ for all four
+classes.
+\item Isomorphism-class exhaustive, $n=10/11/12$: $21$, $266$, $7{,}849$ classes; maximum piece counts
+$8$, $8$, $10$ against bounds $n-1$, $n-1$, $n-2$ --- zero violations. For $n=10$, exact $\ce$ determined
+for every class by two independent engines (branch-and-bound and MILP), all equal to $3$. At $n=12$,
+exactly $5$ classes reach the ledger value $n-2=10$ (tight ledger witnesses; their exact $\ce$ is still
+$3$).
+\item Labelled reconnaissance, $n=10$: $890{,}100$ labelled graphs swept under a $600$-second truncation
+(a sampling sweep, honestly not exhaustive; superseded for $n=10$ by the class-exhaustive item above).
+\item Random six-regular, $n=15/18/21/24$, $2{,}000$ graphs each ($8{,}000$ total, multiple seeds):
+maximum piece counts $11/12/13/13$ against bounds $13/16/19/22$. The sampler (circulant start plus
+degree-preserving swap MCMC) yields correlated samples; these sweeps are treated as smoke tests, not as
+uniform-random evidence.
+\item Adversarial families at $s=7$ ($1{,}500$ instances) and $s=8$ ($600$ instances): partition and
+double triangle-freeness checks, all pass.
+\item Certificates: $18{,}279$ decomposition certificates re-verified by an independent validator, zero
+failures; the validator passed $5/5$ negative controls; three full re-runs produced sha256-identical
+outputs.
+\item Residual risk boundary, stated plainly: the structural danger zone of
+Lemma~\ref{lem:fourreg} is exactly the $L(B)$ family; the exhaustive coverage above reaches $s\le6$
+(i.e.\ all potential counterexamples on $n\le18$ vertices), and the case $s\ge7$ ($n\ge21$) rests on the
+proof alone.
+\end{itemize}
+
+\subsection*{Cubic and odd-regular graphs}
+
+This subsection covers Section~\ref{sec:odd}; the underlying records are the files of
+\texttt{front\_tre/}.
+
+\begin{itemize}
+\item Exhaustive, connected odd-regular, $n\le12$ (degrees $3$ through $11$): $9{,}588$ graphs, zero
+violations of the cubic/odd-regular claims; $f_{re}$ exact values additionally determined for all
+instances with $m\le20$ ($116$ graphs).
+\item Exhaustive, connected cubic: $n=14$: $509$ graphs; $n=16$: $4{,}060$; $n=18$: $41{,}301$ --- zero
+violations of Theorem~\ref{thm:cubicpmfree}.
+\item Piece lemma census: all $60{,}077$ connected bridgeless subcubic graphs on $n\le14$ vertices satisfy
+Lemma~\ref{lem:piece}, with $\min(2p_2-n)=3$: the margin $n/2+3/2$ is attained, and attained
+\emph{only} by $K_{2,3}$ (verified up to isomorphism). For even $n\le14$ the margin is at least $4$.
+\item Perfect-matching-free census: minimal order $16$, exactly one graph (structure: three
+subdivided-$K_4$ blades on one central vertex, $p=n/2+1$); at $n=18$ exactly four graphs, all with the
+same blade structure; all perfect-matching-free cubic graphs found have $p=n/2+1$.
+\item $5$-regular Tutte-obstruction families (orders $36$ to $146$, $5$ graphs): $p\le n-3$ throughout.
+\item Cross-checks: $p$ computed by two independent paths (brute-force pair enumeration vs.\ weighted
+matching), $f_{re}$ by two paths (subset DP vs.\ exact-cover branch-and-bound), $p_2$ cross-checked by
+ILP; positive anchors ($K_4$, $K_6$ tight at $n-1$; Petersen $=6$; $C_5=1$; $P_4=3$) all recovered.
+\end{itemize}
+
+\section*{Acknowledgments}
+
+This work was carried out by a human-directed \emph{multi-agent AI research system}. Independent
+``attack lane'' agents proved the theorems in parallel from a shared briefing and were required to make
+every constructive claim independently recomputable (exact solvers, explicit certificates, exhaustive
+checks); an adversarial \emph{verifier} agent then re-derived the proofs line by line, re-ran the
+verification scripts, and cross-checked quotations against local source copies of the cited papers. The
+first verification round issued a triage report: eleven results green-lit, eleven items flagged for repair
+(all at the level of argument, wording, or constants; none affected a theorem's conclusion), and one claim
+confirmed for withdrawal. A blue-team round implemented all repairs, including the replacement of an
+erroneous counting argument in Corollary~\ref{cor:eulertripy}, the narrowing of
+Proposition~\ref{prop:lockin}(b) to its tower-step form, the correction of an off-by-one in
+Remark~\ref{rem:k3n} and of an arithmetic slip in the proof of Theorem~\ref{thm:k3q}, the correction of
+two numerical constants in Propositions~\ref{prop:lockin}--\ref{prop:mirage}, and the withdrawal of an
+asymptotic construction in Proposition~\ref{prop:selfrobust}, as well as of an earlier claim that a
+phase-transition argument yields $O(n\log\log\log n)$ --- a claim whose direction of comparison was
+inverted, as Proposition~\ref{prop:mirage} explains. A second, independent round re-reviewed the proof of
+the six-regular theorem (verdict: pass, with six minor findings, all repaired), widened the numerical
+coverage to the levels recorded in Appendix~A, and re-examined the literature --- where it surfaced the
+observation of Kouider--Sabidussi \cite{KS95} and thereby forced the repositioning of
+Proposition~\ref{prop:antiphi} from a claimed-first to an explicit-special-case status, as well as the
+correction of the citation record of \cite{AABC25} to its second arXiv version. We believe this
+adversarial loop is itself a methodological contribution; the complete error ledger is maintained in the
+project repository.
+
+\begin{thebibliography}{29}
+
+\bibitem{AABC25} S. Akbari, J. Aloni, A. Beikmohammadi, and A. Clow, \emph{Tight bounds for cycle--edge
+decompositions and covers}, arXiv:2509.01901 (2025); cited at version 2 (September 2025). Theorem 1.3 =
+$\Delta\le4$; Theorem 1.5 = even graphs; Problem 6.1 and Conjectures 6.2--6.4 in \S6.
+
+\bibitem{AAFJLS04} M. Abreu, R. E. L. Aldred, M. Funk, B. Jackson, D. Labbate, and J. Sheehan,
+\emph{Graphs and digraphs with all $2$-factors isomorphic}, J. Combin. Theory Ser. B \textbf{92} (2004),
+395--404.
+
+\bibitem{BHKY62} J. Battle, F. Harary, Y. Kodama, and J. W. T. Youngs, \emph{Additivity of the genus of a
+graph}, Bull. Amer. Math. Soc. \textbf{68} (1962), 565--568.
+
+\bibitem{BH97} E. Bertram and P. Hor\'ak, \emph{Decomposing $4$-regular graphs into triangle-free
+$2$-factors}, SIAM J. Discrete Math. \textbf{10} (1997), 309--317.
+
+\bibitem{BM08} J. A. Bondy and U. S. R. Murty, \emph{Graph Theory}, Graduate Texts in Mathematics 244,
+Springer, New York, 2008.
+
+\bibitem{BM22} M. Buci\'c and R. Montgomery, \emph{Towards the Erd\H{o}s--Gallai cycle decomposition
+conjecture}, arXiv:2211.07689 (2022).
+
+\bibitem{CGS79} G. Chartrand, D. L. Goldsmith, and S. Schuster, \emph{A sufficient condition for graphs
+with $1$-factors}, Colloq. Math. \textbf{41} (1979), fasc.\ 2.
+
+\bibitem{CFS14} D. Conlon, J. Fox, and B. Sudakov, \emph{Cycle packing}, Random Structures Algorithms
+\textbf{45} (2014), 608--626.
+
+\bibitem{CKKPW19} I. Choi, R. Kim, A. V. Kostochka, B. Park, and D. B. West, \emph{Largest $2$-regular
+subgraphs in $3$-regular graphs}, Graphs Combin. \textbf{35} (2019), 805--813.
+
+\bibitem{CKLOT16} B. Csaba, D. K\"uhn, A. Lo, D. Osthus, and A. Treglown, \emph{Proof of the
+$1$-factorization and Hamilton decomposition conjectures}, Mem. Amer. Math. Soc. \textbf{244} (2016),
+no.\ 1152.
+
+\bibitem{Di52} G. A. Dirac, \emph{Some theorems on abstract graphs}, Proc. London Math. Soc. (3)
+\textbf{2} (1952), 69--81.
+
+\bibitem{EJ73} J. Edmonds and E. L. Johnson, \emph{Matching, Euler tours and the Chinese postman}, Math.
+Programming \textbf{5} (1973), 88--124.
+
+\bibitem{E83} P. Erd\H{o}s, \emph{On some of my conjectures in number theory and combinatorics},
+Proceedings of the fourteenth Southeastern conference on combinatorics, graph theory and computing (Boca
+Raton, 1983), Congr. Numer. \textbf{39} (1983), 3--19.
+
+\bibitem{EG59} P. Erd\H{o}s and T. Gallai, \emph{On maximal paths and circuits of graphs}, Acta Math.
+Acad. Sci. Hungar. \textbf{10} (1959), 337--356.
+
+\bibitem{EGP66} P. Erd\H{o}s, A. W. Goodman, and L. P\'osa, \emph{The representation of a graph by set
+intersections}, Canad. J. Math. \textbf{18} (1966), 106--112.
+
+\bibitem{EP184} \emph{Erd\H{o}s Problem \#184}, \url{https://www.erdosproblems.com/184} (accessed
+September 2026).
+
+\bibitem{Er71} P. Erd\H{o}s, \emph{Some unsolved problems in graph theory and combinatorial analysis}, in:
+Combinatorial Mathematics and its Applications (Proc. Conf., Oxford, 1969), Academic Press, London, 1971,
+pp.\ 97--109.
+
+\bibitem{Hartvigsen24} D. Hartvigsen, \emph{Finding triangle-free $2$-factors in general graphs},
+preprint, February 2024.
+
+\bibitem{HNS17} I. Heinrich, M. V. Natale, and M. Streicher, \emph{Haj\'os' cycle conjecture for small
+graphs}, arXiv:1705.08724 (2017).
+
+\bibitem{KS95} M. Kouider and G. Sabidussi, \emph{Factorizations of $4$-regular graphs and Petersen's
+theorem}, J. Combin. Theory Ser. B \textbf{63} (1995), 170--184.
+
+\bibitem{Lucas1883} \'E. Lucas, \emph{R\'ecr\'eations math\'ematiques}, vol.\ 2, Gauthier-Villars, Paris,
+1883.
+
+\bibitem{Pe91} J. Petersen, \emph{Die Theorie der regul\"aren Graphs}, Acta Math. \textbf{15} (1891),
+193--220.
+
+\bibitem{Py85} L. Pyber, \emph{An Erd\H{o}s--Gallai conjecture}, Combinatorica \textbf{5} (1985), 67--79.
+
+\bibitem{Ri74} G. Ringel, \emph{Map Color Theorem}, Grundlehren Band 209, Springer, Berlin, 1974.
+
+\bibitem{SB77} S. Stahl and L. W. Beineke, \emph{Blocks and the non-orientable genus of graphs}, J. Graph
+Theory \textbf{1} (1977), 75--78.
+
+\bibitem{TY97} R. Thomas and X. Yu, \emph{Five-connected toroidal graphs are Hamiltonian}, J. Combin.
+Theory Ser. B \textbf{69} (1997), 79--96.
+
+\end{thebibliography}
+
+\end{document}

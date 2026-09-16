@@ -1,0 +1,23 @@
+
+######## n=4 N=8 m=4 ########
+[n4-m4] n=4 N=8 m=4: |members|=70, profile points=92
+[n4-m4] DomF instances=1,005, T>0 distinct keys=1,005 (0.0s)
+[n4-m4] DomG instances=30,485, distinct split keys=0, hits=0 (0.5s)
+[n4-m4] gadget-qualified pairs = 0
+  [watermark] total = 13312.00M  used = 11999.75M  free = 1312.25M  (encrypted)
+
+######## n=4 N=8 m=5 ########
+[n4-m5] n=4 N=8 m=5: |members|=70, profile points=92
+[n4-m5] DomF instances=33,165, T>0 distinct keys=33,120 (0.7s)
+[n4-m5] DomG instances=1,006,005, distinct split keys=0, hits=0 (14.7s)
+[n4-m5] gadget-qualified pairs = 0
+  [watermark] total = 13312.00M  used = 11999.75M  free = 1312.25M  (encrypted)
+
+######## n=4 N=8 m=6 ########
+[n4-m6] n=4 N=8 m=6: |members|=70, profile points=92
+[n4-m6] DomF instances=718,575, T>0 distinct keys=715,590 (21.4s)
+[n4-m6] DomG instances=21,796,775, distinct split keys=0, hits=0 (639.2s)
+[n4-m6] gadget-qualified pairs = 0
+  [watermark] total = 14336.00M  used = 13189.88M  free = 1146.12M  (encrypted)
+
+RESULT: n=4 N=8 m ∈ [4, 5, 6] 参数化覆盖零分裂（该 m 层清场）

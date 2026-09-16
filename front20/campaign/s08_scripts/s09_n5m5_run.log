@@ -1,0 +1,5 @@
+[n5m5] n=5 N=9 m=5: |members|=126, profile points=255
+[n5m5] DomF instances=112,545, T>0 distinct keys=112,500 (3.4s)
+[n5m5] DomG instances=3,413,865, distinct split keys=0, hits=0 (65.8s)
+[n5m5] distinct split families (F-side) = 0
+RESULT: n=5 N=9 m=5 参数化覆盖零分裂（m=5 层清场）
