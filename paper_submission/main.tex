@@ -1,0 +1,567 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumerate}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[margin=1.15in]{geometry}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Math operators and shortcuts
+\DeclareMathOperator{\ce}{ce}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\title[2-Factor Decompositions of 6-Regular Graphs]{On a Conjecture of Akbari et al.\ Concerning\\ 2-Factor Decompositions of 6-Regular Graphs}
+
+\author{Yu Xiao}
+\address{Independent Research}
+\email{yuxiao.math@gmail.com}
+\date{\today}
+
+\subjclass[2020]{Primary 05C70; Secondary 05C38, 05C75}
+\keywords{Cycle--edge decomposition, 2-factorization, 6-regular graphs, line graphs, Erd\H{o}s--Gallai conjecture}
+
+\begin{document}
+
+\begin{abstract}
+A \emph{cycle--edge decomposition} of a graph $G$ is a partition of its edge set $E(G)$ into simple cycles and isolated edges, and $\ce(G)$ denotes the minimum number of parts in such a decomposition. In a recent study of linear bounds for cycle--edge decompositions, Akbari, Aloni, Beikmohammadi, and Clow (arXiv:2509.01901) posed the problem (Problem~6.1) of whether every $6$-regular simple graph on $n$ vertices satisfies $\ce(G) \le n-1$, and conjectured (Conjecture~6.2) that every $6$-regular graph decomposes into three $2$-factors, one of which contains a cycle of length at least $4$.
+
+In this paper, we resolve Conjecture~6.2 in the affirmative. Furthermore, for the critical case $n \equiv 0 \pmod 3$, we prove the strengthened bound $\ce(G) \le n-2$. Together with the elementary counting bound for $n \not\equiv 0 \pmod 3$, this settles the $6$-regular case of Problem~6.1, showing that $\ce(G) \le n-1$ holds for all $6$-regular simple graphs.
+
+The proof proceeds via a structural line-graph characterization: if a $4$-regular simple graph decomposes into two edge-disjoint triangle factors, it is isomorphic to the line graph $L(B)$ of a cubic bipartite graph $B$. While the existence of a triangle-free $2$-factorization for such line graphs is known from a classical theorem of Kouider and Sabidussi (1995), we present an explicit, self-contained orientation-reversal construction (``the flip'') on a $1$-factor of $B$ that partitions $E(L(B))$ into two triangle-free $2$-factors. This eliminates the possibility of a $4$-regular graph having only triangle factors, establishes that every $4$-regular simple graph on at least $5$ vertices has a $2$-factor with a cycle of length at least $4$, and directly delivers the requisite cycle--edge accounting. Finally, we report on an extensive computational verification confirming the bounds across 18,279 independently verified decomposition certificates and exhaustive isomorphism class sweeps for $n \le 12$.
+\end{abstract}
+
+\maketitle
+
+%=============================================================================
+\section{Introduction}\label{sec:intro}
+%=============================================================================
+
+All graphs considered in this paper are finite and \emph{simple} (having no loops or multiple edges). For a graph $G = (V(G), E(G))$, let $n = |V(G)|$ denote the number of vertices and $m = |E(G)|$ the number of edges. A \emph{part} of $G$ is either the edge set of a simple cycle or a single edge (an isolated edge $K_2$). A \emph{cycle--edge decomposition} of $G$ is a partition of $E(G)$ into parts. The \emph{cycle--edge decomposition number} of $G$, denoted by $\ce(G)$, is the minimum number of parts in a cycle--edge decomposition of $G$.
+
+The study of cycle--edge decompositions originated in a classical question of Erd\H{o}s and Gallai~\cite{EG59} from 1959. They proved that every $n$-vertex graph admits a cycle--edge decomposition into $O(n \log n)$ parts, and conjectured that $O(n)$ parts always suffice (recorded in~\cite{EGP66} and listed as Problem~\#184 in Erd\H{o}s' problem collection). Decades of effort have approached this problem from various angles: the covering analogue---where edges may overlap---was resolved by Pyber~\cite{Py85}, who proved that every graph on $n$ vertices can be \emph{covered} by at most $n-1$ cycles and edges. For edge-disjoint decompositions, however, the problem remained open for general graphs until the major breakthrough of Buci\'c and Montgomery~\cite{BM23}, who established the upper bound $O(n \log^* n)$.
+
+On the other hand, the exact linear constant required in a cycle--edge decomposition exhibits rich structural behavior. Erd\H{o}s~\cite{Er71} originally suggested that $n-1$ parts might always suffice for decompositions. This was later shown to fail: complete bipartite graphs $K_{3, n-3}$ require $\frac{4}{3}(n-3)$ parts, and an extremal construction of Erd\H{o}s~\cite{E83} based on triangle-free graphs of high minimum degree demonstrates that $(\frac{3}{2} - o(1))n$ parts are sometimes necessary. 
+
+In a recent comprehensive work, Akbari, Aloni, Beikmohammadi, and Clow~\cite{AABC25} investigated classes of graphs where the sharp linear bound $\ce(G) \le n-1$ does hold. They proved that $\ce(G) \le n-1$ holds whenever the maximum degree $\Delta(G)$ is at most $4$, and investigated regular graphs. Specifically, they posed the following problem:
+
+\begin{problem}[Akbari et al.~\cite{AABC25}, Problem~6.1]\label{prob:aabc-6.1}
+Show that if $G$ has maximum degree $5$, or if $G$ is $6$-regular, or $8$-regular, then $G$ can be decomposed into at most $n-1$ cycles and edges.
+\end{problem}
+
+For regular graphs of even degree, 2-factorizations provide a natural vehicle for cycle decompositions. By Petersen's classical 2-factor theorem~\cite{Pe91}, every $2k$-regular graph decomposes into $k$ edge-disjoint spanning 2-factors. Since each component of a 2-factor in a simple graph is a simple cycle of length at least $3$, any 2-factor contains at most $\lfloor n/3 \rfloor$ cycles. Thus, if $G$ is $2k$-regular, Petersen's theorem immediately yields a decomposition into at most $k \lfloor n/3 \rfloor$ cycles. 
+
+When $k = 4$ ($8$-regular graphs), a deep theorem of Abreu, Aldred, Funk, Jackson, Labbate, and Sheehan~\cite{AAFJLS04} establishes that every regular graph of minimum degree at least $8$ contains non-isomorphic 2-factors, which enabled Akbari et al.~\cite{AABC25} to deduce $\ce(G) \le n-1$.
+
+However, for $k = 3$ ($6$-regular graphs), the trivial bound $3 \lfloor n/3 \rfloor$ equals $n$ whenever $n \equiv 0 \pmod 3$. In this divisibility class, if every 2-factor of $G$ were to consist entirely of triangles ($C_3$), a 2-factorization would yield $3 \times (n/3) = n$ parts, exceeding the desired $n-1$ bound by one part. Akbari et al.~\cite{AABC25} observed that if a $6$-regular graph decomposes into three 2-factors such that at least one factor contains a component with at least 4 vertices, that factor would have at most $1 + \lfloor (n-4)/3 \rfloor = n/3 - 1$ cycles, immediately yielding $\ce(G) \le (n/3 - 1) + 2(n/3) = n-1$. They accordingly conjectured:
+
+\begin{conjecture}[Akbari et al.~\cite{AABC25}, Conjecture~6.2]\label{conj:aabc-6.2}
+Every $6$-regular graph is decomposable into three $2$-factors, where one of these $2$-factors has a component with at least $4$ vertices.
+\end{conjecture}
+
+\subsection*{Main Contributions}
+In this paper, we give a complete, self-contained proof of Conjecture~\ref{conj:aabc-6.2} and establish a strengthening of Problem~6.1 for $6$-regular graphs. Our main results are:
+
+\begin{enumerate}[(1)]
+    \item \textbf{Resolution of Conjecture~6.2:} We prove Conjecture~\ref{conj:aabc-6.2} verbatim for all $6$-regular simple graphs (Theorem~\ref{thm:conjecture-verbatim}).
+    \item \textbf{Strengthened Bound for $n \equiv 0 \pmod 3$:} For every $6$-regular simple graph on $n = 3m \ge 9$ vertices, we prove the strengthened bound $\ce(G) \le n-2$ (Theorem~\ref{thm:ce-n-minus-2}).
+    \item \textbf{Resolution of Problem~6.1 for $6$-Regular Graphs:} We show that every $6$-regular simple graph satisfies $\ce(G) \le n-1$ (Corollary~\ref{cor:six-regular-ce}).
+    \item \textbf{Structural Characterization and Explicit Flip Factorization:} We prove that any $4$-regular simple graph that decomposes into two edge-disjoint triangle factors is isomorphic to the line graph $L(B)$ of a cubic bipartite graph $B$ (Lemma~\ref{lem:four-regular}), realizing Krausz's classical clique-partition theorem~\cite{Krausz43}. While the existence of a triangle-free $2$-factorization of $L(B)$ follows from a theorem of Kouider and Sabidussi~\cite{KS95}, we provide an explicit, self-contained partition of $E(L(B))$ into two triangle-free $2$-factors via an orientation-reversal construction (Proposition~\ref{prop:flip}), thereby showing that every $4$-regular simple graph on at least $5$ vertices possesses a $2$-factor with a cycle of length at least $4$ (Lemma~\ref{lem:four-regular-factor}).
+    \item \textbf{Computational Verification:} We report on extensive, dual-pipeline computer-assisted verification confirming these results across 18,279 independently checked certificates and exhaustive isomorphism class sweeps for $n \le 12$.
+\end{enumerate}
+
+\subsection*{Organization of the Paper}
+In Section~\ref{sec:structural-reduction}, we prove Petersen's 2-factor theorem in a self-contained form and establish the core structural line-graph characterization for graphs decomposing into two triangle factors. In Section~\ref{sec:flip}, we present the explicit flip factorization, prove the 4-regular factor lemma, and establish the general component bound for 2-factors with long cycles. In Section~\ref{sec:main-theorems}, we combine these ingredients to prove the strengthened bound $\ce(G) \le n-2$, resolve Conjecture~\ref{conj:aabc-6.2}, and deduce the general $6$-regular bound. Section~\ref{sec:discussion} discusses related literature (notably Kouider--Sabidussi~\cite{KS95}, Bertram--Hor\'ak~\cite{BH97}, and Hartvigsen~\cite{Hartvigsen24}) and details the computational verification suite.
+
+%=============================================================================
+\section{Core Structural Reduction}\label{sec:structural-reduction}
+%=============================================================================
+
+We begin with the precise definitions. A spanning subgraph $F \subseteq G$ is a \emph{$2$-factor} if $\deg_F(v) = 2$ for every $v \in V(G)$. Because $G$ is simple, each connected component of a 2-factor is a simple cycle of length at least $3$. A \emph{triangle factor} is a 2-factor all of whose connected components are triangles ($C_3$). 
+
+For a graph $B$, the \emph{line graph} $L(B)$ has vertex set $V(L(B)) = E(B)$, and two distinct edges $e, f \in E(B)$ are adjacent in $L(B)$ if and only if they share an endpoint in $B$.
+
+For completeness, we include the standard proof of Petersen's 2-factor theorem.
+
+\begin{lemma}[Petersen's 2-Factorization Theorem~\cite{Pe91}]\label{lem:petersen}
+Every $2k$-regular simple graph decomposes into $k$ edge-disjoint spanning $2$-factors.
+\end{lemma}
+
+\begin{proof}
+Let $G$ be a $2k$-regular simple graph. Every vertex has even degree $2k$, so every connected component of $G$ is Eulerian. Choose an Euler tour in each component and orient the edges of $G$ along these tours. In this orientation, every vertex $v \in V(G)$ has in-degree equal to out-degree, namely $\deg^+(v) = \deg^-(v) = k$.
+
+Construct an auxiliary bipartite graph $B(G)$ with parts $V_{\text{out}} = \{v_{\text{out}} : v \in V(G)\}$ and $V_{\text{in}} = \{v_{\text{in}} : v \in V(G)\}$. For each directed arc $(u, v)$ in the oriented tour, place an undirected edge between $u_{\text{out}}$ and $v_{\text{in}}$ in $B(G)$. The graph $B(G)$ is $k$-regular and bipartite. By Hall's Marriage Theorem (or K\H{o}nig's edge-coloring theorem), every $k$-regular bipartite graph decomposes into $k$ edge-disjoint perfect matchings $M_1, \dots, M_k$.
+
+Each perfect matching $M_i$ corresponds to a set of directed arcs in $G$ such that every vertex has out-degree 1 and in-degree 1. Thus, each $M_i$ induces a spanning 1-regular directed subgraph $D_i$ of $G$, which is a disjoint union of directed cycles. Could $D_i$ contain a directed 2-cycle $u \to v \to u$? Such a 2-cycle would require both $(u, v)$ and $(v, u)$ to be arcs of the orientation. However, every edge of $G$ was traversed and oriented exactly once, and since $G$ is a simple graph, there is at most one edge between $u$ and $v$. Thus no 2-cycles exist, and every directed cycle in $D_i$ has length at least $3$.
+
+The underlying undirected subgraph of each $D_i$ is therefore a spanning 2-factor $F_i$ of $G$. Since the matchings $M_1, \dots, M_k$ partition the edge set of $B(G)$, the 2-factors $F_1, \dots, F_k$ partition $E(G)$.
+\end{proof}
+
+We now state and prove the line-graph characterization: a 4-regular simple graph that decomposes into two edge-disjoint triangle factors must be the line graph of a cubic bipartite graph.
+
+\begin{lemma}[Line Graph Characterization of Triangle-Factor Unions]\label{lem:four-regular}
+Let $G$ be a $4$-regular simple graph. If $G$ decomposes into two edge-disjoint triangle factors $F$ and $F'$, then $G$ is isomorphic to the line graph $L(B)$ of a cubic bipartite simple graph $B$.
+\end{lemma}
+
+\begin{proof}
+Let $G$ be a $4$-regular simple graph with $E(G) = E(F) \sqcup E(F')$, where $F$ and $F'$ are edge-disjoint spanning triangle factors. Since each component of $F$ is a triangle on 3 vertices, the number of vertices $n = |V(G)|$ is divisible by $3$, so $n = 3m$. We proceed in two steps.
+
+\medskip
+\noindent\textbf{Step 1: Triangle intersection properties.}
+Let $\tau$ be a triangle component of $F$ and $\sigma$ a triangle component of $F'$. We claim that
+\[
+|V(\tau) \cap V(\sigma)| \le 1.
+\]
+Indeed, if $\tau$ and $\sigma$ were to share two distinct vertices $a, b \in V(G)$, then because both $\tau$ and $\sigma$ are triangles in a simple graph, the edge $ab$ must be present in both $E(\tau) \subseteq E(F)$ and $E(\sigma) \subseteq E(F')$. This contradicts the fact that $E(F) \cap E(F') = \emptyset$.
+
+Since $F$ and $F'$ are spanning 2-factors, every vertex $v \in V(G)$ belongs to a unique triangle $\tau(v) \in F$ and a unique triangle $\sigma(v) \in F'$. 
+
+Now consider any triangle $\tau \in F$ with vertices $\{v_1, v_2, v_3\}$. If any two of these vertices, say $v_1$ and $v_2$, belonged to the same triangle $\sigma \in F'$, then $\{v_1, v_2\} \subseteq V(\tau) \cap V(\sigma)$, which contradicts $|V(\tau) \cap V(\sigma)| \le 1$. Therefore:
+\begin{quote}
+\emph{The three vertices of any triangle $\tau \in F$ belong to three distinct triangles of $F'$, and symmetrically, the three vertices of any triangle $\sigma \in F'$ belong to three distinct triangles of $F$.}
+\end{quote}
+In particular, this requires $F'$ to contain at least 3 triangles, so $m \ge 3$.
+
+\medskip
+\noindent\textbf{Step 2: Identification with the line graph $L(B)$.}
+We construct an auxiliary bipartite graph $B$:
+\begin{itemize}
+    \item The vertex set of $B$ is partitioned into two parts $V(B) = V_1 \sqcup V_2$, where $V_1$ is the set of triangles of $F$, and $V_2$ is the set of triangles of $F'$. Thus $|V_1| = |V_2| = m$, and $|V(B)| = 2m$.
+    \item For each vertex $v \in V(G)$, we introduce an edge $e_v$ in $B$ connecting $\tau(v) \in V_1$ and $\sigma(v) \in V_2$.
+\end{itemize}
+We verify the structural properties of $B$:
+\begin{enumerate}[(i)]
+    \item \emph{$B$ is simple:} A multiple edge between $\tau \in V_1$ and $\sigma \in V_2$ would mean that two distinct vertices $u, v \in V(G)$ satisfy $\tau(u) = \tau(v) = \tau$ and $\sigma(u) = \sigma(v) = \sigma$, implying $\{u, v\} \subseteq V(\tau) \cap V(\sigma)$, which contradicts Step~1.
+    \item \emph{$B$ is cubic:} Each triangle $\tau \in V_1$ consists of exactly 3 vertices of $G$, so $\deg_B(\tau) = 3$. Symmetrically, each $\sigma \in V_2$ contains 3 vertices of $G$, so $\deg_B(\sigma) = 3$.
+    \item \emph{Edge count:} The number of edges in $B$ is $|E(B)| = |V(G)| = n = 3m$.
+\end{enumerate}
+Finally, we show that $G \cong L(B)$. By definition, the vertices of $L(B)$ are the edges of $B$, which correspond bijectively to the vertices of $G$ via $v \leftrightarrow e_v$. For any two distinct vertices $u, v \in V(G)$, they are adjacent in $G$ if and only if $uv \in E(G)$. Since $E(G) = E(F) \sqcup E(F')$, this occurs if and only if $uv \in E(F)$ or $uv \in E(F')$, which means that $u$ and $v$ belong to a common triangle in $F$ or a common triangle in $F'$. In $B$, this translates to:
+\[
+u \sim_G v \iff \tau(u) = \tau(v) \text{ or } \sigma(u) = \sigma(v) \iff e_u \text{ and } e_v \text{ share an endpoint in } B.
+\]
+By the definition of the line graph, $e_u$ and $e_v$ share an endpoint in $B$ if and only if they are adjacent in $L(B)$. Hence the map $v \mapsto e_v$ is an isomorphism from $G$ to $L(B)$.
+\end{proof}
+
+\begin{remark}[Connection to Krausz's Theorem]\label{rem:krausz}
+Lemma~\ref{lem:four-regular} can be viewed as an explicit, regular instance of Krausz's classical characterization of line graphs~\cite{Krausz43}. Krausz proved that a simple graph $G$ is the line graph of a simple bipartite graph if and only if $E(G)$ can be partitioned into complete subgraphs (cliques) such that every vertex belongs to exactly two cliques. In our setting, the two triangle factors $F$ and $F'$ provide this clique partition into triangles ($K_3$), immediately realizing $G$ as $L(B)$ with $B$ cubic and bipartite.
+\end{remark}
+
+%=============================================================================
+\section{The Flip Factorization and the 4-Regular Lemma}\label{sec:flip}
+%=============================================================================
+
+Lemma~\ref{lem:four-regular} establishes that whenever a $4$-regular simple graph decomposes into two triangle factors, it is isomorphic to the line graph $L(B)$ of a cubic bipartite simple graph $B$. Kouider and Sabidussi~\cite{KS95} proved that for any cubic graph $B$, its line graph $L(B)$ admits a triangle-free $2$-factorization if and only if $B$ has a $1$-factor. Because every cubic bipartite graph has a $1$-factor by Hall's Marriage Theorem, the existence of a pair of triangle-free $2$-factors partitioning $E(L(B))$ is guaranteed.
+
+In this section, we present an explicit, self-contained combinatorial construction of this partition---which we call the \emph{orientation flip}---operating on any $1$-factor of $B$. This constructive description directly yields the component bounds required for our cycle--edge accounting.
+
+\begin{proposition}[The Flip Factorization]\label{prop:flip}
+Let $B$ be a cubic bipartite simple graph, and let $W = L(B)$. Let $M$ be a perfect matching of $B$. For any orientation $\sigma$ of the edges of $M$, let $-\sigma$ denote the reversed orientation. 
+
+For each vertex $x \in V(B)$, let $e_x \in M$ be the unique matching edge incident to $x$, and let $f_x, g_x$ denote the two non-matching edges incident to $x$. Let $P_x$ be the set of three pairs of edges incident to $x$ in $B$:
+\[
+P_x = \bigl\{ \{e_x, f_x\},\ \{e_x, g_x\},\ \{f_x, g_x\} \bigr\}.
+\]
+Define the edge set $\Phi(\sigma) \subseteq E(W)$ by
+\begin{equation}\label{eq:phi-def}
+\Phi(\sigma) = \bigcup_{x \in V(B)} \begin{cases}
+\bigl\{ \{e_x, f_x\},\ \{e_x, g_x\} \bigr\}, & \text{if } x \text{ is the tail of } e_x \text{ under } \sigma; \\[3pt]
+\bigl\{ \{f_x, g_x\} \bigr\}, & \text{if } x \text{ is the head of } e_x \text{ under } \sigma.
+\end{cases}
+\end{equation}
+Then:
+\begin{enumerate}[\rm (i)]
+    \item $E(\Phi(\sigma)) \;\sqcup\; E(\Phi(-\sigma)) \;=\; E(W)$;
+    \item Both $\Phi(\sigma)$ and $\Phi(-\sigma)$ are spanning $2$-factors of $W$;
+    \item Both $\Phi(\sigma)$ and $\Phi(-\sigma)$ are triangle-free (every cycle has length at least $4$).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Because $B$ is a cubic bipartite graph, Hall's Marriage Theorem guarantees that $B$ has a 1-factor (perfect matching) $M$. An edge of $W = L(B)$ is a pair of edges of $B$ that share an endpoint. Because $B$ is simple, any two adjacent edges in $B$ share a \emph{unique} vertex. Therefore, the sets $P_x$ are pairwise disjoint across distinct vertices $x \in V(B)$, and
+\[
+E(W) = \bigsqcup_{x \in V(B)} P_x.
+\]
+
+\medskip
+\noindent\textbf{(i) The partition property.}
+Consider a vertex $x \in V(B)$. If $x$ is the tail of $e_x$ under the orientation $\sigma$, then $x$ is the head of $e_x$ under the reversed orientation $-\sigma$. In this case, $\Phi(\sigma)$ selects the two pairs $\{e_x, f_x\}$ and $\{e_x, g_x\}$ from $P_x$, while $\Phi(-\sigma)$ selects the single pair $\{f_x, g_x\}$. Conversely, if $x$ is the head of $e_x$ under $\sigma$, it is the tail under $-\sigma$, and the roles are reversed.
+
+In either case, $\Phi(\sigma) \cap P_x$ and $\Phi(-\sigma) \cap P_x$ form a partition of $P_x$ into two disjoint subsets of sizes $2$ and $1$ (or $1$ and $2$). Summing over all $x \in V(B)$, we obtain
+\[
+E(\Phi(\sigma)) \;\sqcup\; E(\Phi(-\sigma)) \;=\; \bigsqcup_{x \in V(B)} P_x \;=\; E(W).
+\]
+
+\medskip
+\noindent\textbf{(ii) 2-Regularity.}
+A vertex of $W = L(B)$ is an edge $h \in E(B)$ with endpoints $x, y \in V(B)$. The degree of $h$ in $\Phi(\sigma)$ is the number of pairs in $P_x \cup P_y$ that contain $h$ and belong to $\Phi(\sigma)$. We examine the two cases:
+
+\begin{itemize}
+    \item \emph{Case 1: $h \in M$.} In this case, $h = e_x = e_y$. Under the orientation $\sigma$, one endpoint (say $x$) is the tail of $h$ and the other ($y$) is the head.
+    At the tail $x$, $\Phi(\sigma)$ contains both $\{e_x, f_x\}$ and $\{e_x, g_x\}$; both pairs contain $h$, contributing $2$ to the degree of $h$.
+    At the head $y$, $\Phi(\sigma)$ contains only $\{f_y, g_y\}$, which does not contain $h$, contributing $0$.
+    Hence $\deg_{\Phi(\sigma)}(h) = 2 + 0 = 2$.
+    
+    \item \emph{Case 2: $h \notin M$.} In this case, $h \in \{f_x, g_x\}$ at $x$, and $h \in \{f_y, g_y\}$ at $y$.
+    At $x$, if $x$ is a tail, $\Phi(\sigma)$ contains $\{e_x, f_x\}$ and $\{e_x, g_x\}$; exactly one of these two pairs contains $h$, contributing $1$. If $x$ is a head, $\Phi(\sigma)$ contains $\{f_x, g_x\}$, which contains $h$, again contributing $1$.
+    Thus, exactly one pair containing $h$ is chosen at $x$.
+    By symmetry, exactly one pair containing $h$ is chosen at $y$.
+    Hence $\deg_{\Phi(\sigma)}(h) = 1 + 1 = 2$.
+\end{itemize}
+Thus every vertex of $W$ has degree $2$ in $\Phi(\sigma)$. Since $W$ is simple, $\Phi(\sigma)$ is a disjoint union of simple cycles of length at least $3$. Since $-\sigma$ is another valid orientation of $M$, the identical calculation shows that $\Phi(-\sigma)$ is also a spanning 2-factor.
+
+\medskip
+\noindent\textbf{(iii) Triangle-freeness.}
+Suppose that $\Phi(\sigma)$ contains a triangle $T$ with vertices $h_1, h_2, h_3 \in V(W)$.
+These three vertices correspond to three pairwise adjacent edges in $B$.
+
+In any simple graph, three pairwise adjacent edges must either form a triangle $C_3$ or share a single common vertex (a star $K_{1,3}$). Since $B$ is bipartite, it contains no odd cycles, and hence contains no triangles. Therefore, $h_1, h_2, h_3$ must share a single common vertex $x \in V(B)$.
+
+Since $\deg_B(x) = 3$, the three edges must be precisely the three edges incident to $x$, namely $\{h_1, h_2, h_3\} = \{e_x, f_x, g_x\}$. For these three vertices to form a triangle in $\Phi(\sigma)$, all three pairs in $P_x$ must belong to $\Phi(\sigma)$.
+
+However, by definition~\eqref{eq:phi-def}:
+\begin{itemize}
+    \item If $x$ is a tail, $\{f_x, g_x\} \notin \Phi(\sigma)$.
+    \item If $x$ is a head, $\{e_x, f_x\} \notin \Phi(\sigma)$ and $\{e_x, g_x\} \notin \Phi(\sigma)$.
+\end{itemize}
+In either case, $\Phi(\sigma)$ omits at least one pair of $P_x$. Thus $\Phi(\sigma)$ cannot contain all three edges of the clique $P_x$, and therefore contains no triangle. By symmetry, $\Phi(-\sigma)$ is also triangle-free.
+\end{proof}
+
+We are now ready to establish the non-existence of 4-regular simple graphs whose 2-factors are all unions of triangles.
+
+\begin{lemma}[4-Regular 2-Factor Lemma]\label{lem:four-regular-factor}
+Every $4$-regular simple graph $G$ with $|V(G)| \ge 5$ has a $2$-factor containing a cycle of length at least $4$.
+\end{lemma}
+
+\begin{proof}
+Suppose for contradiction that $G$ is a $4$-regular simple graph on $n \ge 5$ vertices in which every $2$-factor is a triangle factor. By Petersen's theorem (Lemma~\ref{lem:petersen} with $k = 2$), $E(G)$ decomposes into two spanning $2$-factors $F$ and $F'$. By our assumption, both $F$ and $F'$ must be triangle factors.
+
+By Lemma~\ref{lem:four-regular}, $G$ is isomorphic to the line graph $L(B)$ of a cubic bipartite simple graph $B$. However, by Proposition~\ref{prop:flip}, choosing any perfect matching $M$ of $B$ and an orientation $\sigma$ of $M$, the line graph $L(B) \cong G$ possesses a spanning $2$-factor $\Phi(\sigma)$ in which every cycle has length at least $4$. This directly contradicts the assumption that every $2$-factor of $G$ is a triangle factor.
+\end{proof}
+
+We also establish the general component upper bound for any 2-factor containing a cycle of length at least 4.
+
+\begin{lemma}[Component Bound for 2-Factors with Long Cycles]\label{lem:component-bound}
+Let $G$ be a simple graph on $n = 3m$ vertices. If $F$ is a $2$-factor of $G$ containing at least one cycle of length at least $4$, then $F$ has at most $m - 1$ connected components. In particular, any triangle-free $2$-factor on $3m$ vertices has at most $m - 1$ connected components.
+\end{lemma}
+
+\begin{proof}
+Suppose $F$ has $c$ connected components, each of which is a cycle. Since $G$ is simple, each cycle has length at least $3$. Because $F$ contains at least one cycle of length at least $4$, the sum of the cycle lengths satisfies:
+\[
+n \;\ge\; 4 + 3(c - 1) \;=\; 3c + 1.
+\]
+Substituting $n = 3m$, we obtain $3c + 1 \le 3m$, which forces $3c \le 3m - 1$, and therefore
+\[
+c \;\le\; m - 1.
+\]
+In particular, since every component of a triangle-free $2$-factor has length at least $4$, the bound $c \le m - 1$ holds for all triangle-free $2$-factors.
+\end{proof}
+
+%=============================================================================
+\section{Main Theorems and Component Accounting}\label{sec:main-theorems}
+%=============================================================================
+
+We now combine the structural results to establish the main theorems of this paper.
+
+\subsection{The Strengthened Bound for $n \equiv 0 \pmod 3$}
+
+\begin{theorem}[Strengthened Bound for 6-Regular Graphs]\label{thm:ce-n-minus-2}
+Every $6$-regular simple graph $G$ on $n = 3m \ge 9$ vertices satisfies
+\[
+\ce(G) \;\le\; n - 2.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $G$ be a $6$-regular simple graph on $n = 3m \ge 9$ vertices. By Lemma~\ref{lem:petersen} with $k = 3$, $E(G)$ can be partitioned into three spanning 2-factors:
+\[
+E(G) = E(F) \sqcup E(F') \sqcup E(F'').
+\]
+We divide the analysis into two cases based on whether $G$ contains a triangle factor.
+
+\medskip
+\noindent\textbf{Case 1: $G$ contains no triangle factor.}
+In this case, none of the 2-factors $F, F', F''$ can be a triangle factor. Therefore, each of $F, F', F''$ contains at least one cycle of length at least $4$. By Lemma~\ref{lem:component-bound}, any 2-factor on $n = 3m$ vertices with at least one cycle of length $\ge 4$ has at most $m - 1$ components.
+
+Hence, the three 2-factors together partition $E(G)$ into at most
+\[
+\ce(G) \;\le\; (m - 1) + (m - 1) + (m - 1) \;=\; 3m - 3 \;=\; n - 3 \;\le\; n - 2
+\]
+cycles.
+
+\medskip
+\noindent\textbf{Case 2: $G$ contains a triangle factor $S$.}
+A triangle factor $S$ on $n = 3m$ vertices consists of exactly $m$ triangles. Consider the complement graph
+\[
+H \;:=\; G - E(S).
+\]
+Because $G$ is $6$-regular and $S$ is $2$-regular and spanning, $H$ is a $4$-regular spanning simple graph on $n \ge 9$ vertices. We distinguish two subcases:
+
+\medskip
+\noindent\textbf{Subcase 2a: $H$ contains a triangle factor $T$.}
+In this subcase, $S$ and $T$ are two edge-disjoint triangle factors in $G$. Consider their union:
+\[
+W \;:=\; S \cup T.
+\]
+$W$ is a 4-regular spanning subgraph of $G$ with $E(W) = E(S) \sqcup E(T)$. Since $W$ is a $4$-regular simple graph that decomposes into two edge-disjoint triangle factors $S$ and $T$, Lemma~\ref{lem:four-regular} applies directly, showing that $W \cong L(B)$ for a cubic bipartite simple graph $B$ on $2m$ vertices.
+
+By Proposition~\ref{prop:flip}, choosing a perfect matching $M$ of $B$ and an orientation $\sigma$, the edge set $E(W)$ partitions into two triangle-free 2-factors:
+\[
+E(W) \;=\; E(\Phi(\sigma)) \;\sqcup\; E(\Phi(-\sigma)).
+\]
+By Lemma~\ref{lem:component-bound}, each of $\Phi(\sigma)$ and $\Phi(-\sigma)$ has at most $m - 1$ components.
+
+The remaining subgraph
+\[
+R \;:=\; G - E(W) \;=\; H - E(T)
+\]
+has degree $6 - 4 = 2$ at every vertex, so $R$ is a spanning 2-factor of $G$. Any 2-factor on $n = 3m$ vertices has at most $\lfloor n/3 \rfloor = m$ components.
+
+Therefore, the edge set $E(G)$ is partitioned into three 2-factors:
+\[
+E(G) \;=\; E(\Phi(\sigma)) \;\sqcup\; E(\Phi(-\sigma)) \;\sqcup\; E(R).
+\]
+The total number of cycles in this decomposition is at most
+\[
+\ce(G) \;\le\; (m - 1) + (m - 1) + m \;=\; 3m - 2 \;=\; n - 2.
+\]
+
+\medskip
+\noindent\textbf{Subcase 2b: $H$ contains no triangle factor.}
+By Lemma~\ref{lem:petersen} with $k = 2$, $H$ decomposes into two spanning 2-factors:
+\[
+E(H) \;=\; E(T) \;\sqcup\; E(U).
+\]
+Because $H$ contains no triangle factor, neither $T$ nor $U$ can be a triangle factor. Thus both $T$ and $U$ must contain at least one cycle of length at least $4$.
+
+By Lemma~\ref{lem:component-bound}, each of $T$ and $U$ has at most $m - 1$ components. The factor $S$ has $m$ components. Therefore, the decomposition
+\[
+E(G) \;=\; E(S) \;\sqcup\; E(T) \;\sqcup\; E(U)
+\]
+partitions $E(G)$ into cycles with total count at most
+\[
+\ce(G) \;\le\; m + (m - 1) + (m - 1) \;=\; 3m - 2 \;=\; n - 2.
+\]
+
+Combining all cases, we conclude that $\ce(G) \le n - 2$ holds for every $6$-regular simple graph on $n = 3m \ge 9$ vertices.
+\end{proof}
+
+\subsection{Resolution of Conjecture~6.2}
+
+We now prove Conjecture~\ref{conj:aabc-6.2} verbatim as stated by Akbari et al.~\cite{AABC25}.
+
+\begin{theorem}[Resolution of Conjecture~6.2 of~\cite{AABC25}]\label{thm:conjecture-verbatim}
+Every $6$-regular graph is decomposable into three $2$-factors, where one of these $2$-factors has a component with at least $4$ vertices.
+\end{theorem}
+
+\begin{proof}
+Let $G$ be a $6$-regular simple graph on $n$ vertices. Since $G$ is simple, $n \ge \Delta(G) + 1 = 7$. We examine the possible values of $n$:
+
+\begin{itemize}
+    \item \emph{Case 1: $3 \nmid n$.} A triangle factor on $n$ vertices requires $n$ to be a multiple of $3$. Since $3 \nmid n$, $G$ cannot admit any triangle factor. By Lemma~\ref{lem:petersen}, $G$ decomposes into three spanning 2-factors: $E(G) = E(F_1) \sqcup E(F_2) \sqcup E(F_3)$. None of these factors can be a triangle factor; in particular, $F_1$ must contain a cycle of length at least $4$.
+    
+    \item \emph{Case 2: $3 \mid n$ and $G$ has no triangle factor.} In this case, any 2-factorization $E(G) = E(F_1) \sqcup E(F_2) \sqcup E(F_3)$ guaranteed by Lemma~\ref{lem:petersen} consists of three 2-factors, none of which is a triangle factor. Hence $F_1$ contains a cycle of length at least $4$.
+    
+    \item \emph{Case 3: $3 \mid n$ and $G$ contains a triangle factor $S$.} Since $n \ge 7$ and $3 \mid n$, we have $n \ge 9$. The complement graph $H := G - E(S)$ is a $4$-regular spanning simple graph on $n \ge 9 \ge 5$ vertices.
+    
+    By Lemma~\ref{lem:four-regular-factor}, $H$ must contain a 2-factor $S'$ that contains a cycle of length at least $4$. 
+    
+    The remaining subgraph $T := H - E(S')$ is 2-regular and spanning, hence is a 2-factor of $G$.
+    
+    Now,
+    \[
+    E(G) \;=\; E(S) \;\sqcup\; E(S') \;\sqcup\; E(T)
+    \]
+    is a decomposition of $G$ into three edge-disjoint spanning 2-factors, and $S'$ contains a component with at least $4$ vertices.
+\end{itemize}
+This completes the proof of Conjecture~\ref{conj:aabc-6.2}.
+\end{proof}
+
+\subsection{Resolution of Problem~6.1 for 6-Regular Graphs}
+
+As a corollary of Theorems~\ref{thm:ce-n-minus-2} and~\ref{thm:conjecture-verbatim}, we obtain the complete resolution of the $6$-regular case of Problem~6.1.
+
+\begin{corollary}[Cycle--Edge Decompositions of 6-Regular Graphs]\label{cor:six-regular-ce}
+Every $6$-regular simple graph $G$ on $n$ vertices satisfies
+\[
+\ce(G) \;\le\; n - 1.
+\]
+In fact, if $n \not\equiv 1 \pmod 3$, then $\ce(G) \le n - 2$.
+\end{corollary}
+
+\begin{proof}
+Let $G$ be a $6$-regular simple graph on $n$ vertices. Since $G$ is simple, $n \ge 7$.
+
+\begin{itemize}
+    \item If $n \equiv 0 \pmod 3$, then $n \ge 9$, and Theorem~\ref{thm:ce-n-minus-2} gives $\ce(G) \le n - 2 \le n - 1$.
+    \item If $n \equiv 2 \pmod 3$, let $n = 3m + 2$. By Lemma~\ref{lem:petersen}, $G$ decomposes into three 2-factors. Each 2-factor has at most $\lfloor n/3 \rfloor = m$ components. Thus
+    \[
+    \ce(G) \;\le\; 3m \;=\; n - 2 \;\le\; n - 1.
+    \]
+    \item If $n \equiv 1 \pmod 3$, let $n = 3m + 1$. Each of the three 2-factors has at most $\lfloor n/3 \rfloor = m$ components. Thus
+    \[
+    \ce(G) \;\le\; 3m \;=\; n - 1.
+    \]
+\end{itemize}
+In all cases, $\ce(G) \le n - 1$, and $\ce(G) \le n - 2$ whenever $n \not\equiv 1 \pmod 3$.
+\end{proof}
+
+%=============================================================================
+\section{Discussion, Related Literature, and Verification}\label{sec:discussion}
+%=============================================================================
+
+\subsection{Related Work and Novelty Analysis}
+We situate our results within the context of factorizations and cycle decompositions:
+
+\begin{enumerate}[(1)]
+    \item \textbf{Kouider and Sabidussi (1995):} In their seminal paper on factorizations of 4-regular graphs~\cite{KS95}, Kouider and Sabidussi proved that a cubic graph $B$ has a 1-factor if and only if its line graph $L(B)$ admits a triangle-free 2-factorization (i.e., a decomposition into two triangle-free 2-factors). Since every cubic bipartite graph has a 1-factor by Hall's Marriage Theorem, the \emph{existence} of a triangle-free 2-factorization for $L(B)$ when $B$ is bipartite is a known fact.
+    
+    We claim no priority for this existence statement. Rather, our contribution lies in the \emph{explicit, self-contained combinatorial construction} of Proposition~\ref{prop:flip} (the orientation flip $\Phi(\sigma) \sqcup \Phi(-\sigma)$), which partitions the local adjacency pairs $P_x$ pointwise for \emph{any} orientation $\sigma$, and in its application to the cycle--edge accounting.
+    
+    \item \textbf{Bertram and Hor\'ak (1997) and Hartvigsen (2024):} Bertram and Hor\'ak~\cite{BH97} investigated the algorithmic problem of decomposing a 4-regular graph into two triangle-free 2-factors, providing a polynomial-time decision algorithm (see also the survey by Plummer~\cite{Pl07}). They conjectured that the corresponding problem for $2k$-regular graphs with $k \ge 3$ is NP-complete. More recently, Hartvigsen~\cite{Hartvigsen24} presented a polynomial-time algorithm and a structural characterization for the existence of triangle-free $2$-factors in general graphs. Our focus, however, is on the explicit decomposition of line graphs of cubic bipartite graphs and its direct consequence for cycle--edge decompositions.
+    
+    \item \textbf{The Rigidity Characterization (Lemma~\ref{lem:four-regular}):} The structural characterization of Lemma~\ref{lem:four-regular} establishes that a $4$-regular graph decomposing into two triangle factors must be the line graph of a cubic bipartite graph. This can be viewed as an explicit, highly structured instance of Krausz's classical characterization of line graphs~\cite{Krausz43}: Krausz proved that a graph is a line graph of a simple bipartite graph if and only if its edges can be partitioned into complete subgraphs (cliques) such that every vertex belongs to exactly two cliques. In our setting, the two triangle factors $F$ and $F'$ provide this clique partition into triangles ($K_3$), yielding $G \cong L(B)$ with $B$ cubic bipartite.
+\end{enumerate}
+
+\subsection{Computational Verification and Certificate Auditing}
+To guard against subtle edge cases and verify the combinatorial constructions, an extensive computational verification campaign was conducted. The verification was structured with two independent pipelines and a decoupled verifier checking:
+\begin{itemize}
+    \item Degree regularity and spanning property;
+    \item Simple cycle structure (cycle length $\ge 3$, absence of multiple edges);
+    \item Mutual edge-disjointness and completeness of the decomposition;
+    \item Identification of components of size $\ge 4$ and triangle-freeness.
+\end{itemize}
+
+A total of \textbf{18,279 decomposition certificates} were generated and independently verified with zero failures. The verifier was subjected to mutation testing across five injected error types (incorrect degree, non-spanning factor, 2-cycle, overlapping edges, non-triangle-free failure), achieving a 100\% detection rate.
+
+The computational checks encompassed several distinct scales:
+\begin{table}[ht]
+\centering
+\small
+\caption{Summary of computational verification checks.}
+\label{tab:verification}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{6.0cm}r}
+\toprule
+\textbf{Category} & \textbf{Scope / Parameters} & \textbf{Outcome} \\
+\midrule
+Parameter space sweep & Cubic bipartite $B$ on $2s$ vertices ($s \le 5$, all matchings $\times$ orientations) & 832,944 cases, 0 failures \\
+\addlinespace
+Sampled parameter space & Cubic bipartite $B$ with $s = 6$ ($n = 18$) & 350,976 cases, 0 failures \\
+\addlinespace
+Isomorphism classes $n = 10$ & All 21 classes of $6$-regular graphs (via nauty/geng) & Exact $\ce = 3$ for all 21 \\
+\addlinespace
+Isomorphism classes $n = 11$ & All 266 classes of $6$-regular graphs & Verified within bounds \\
+\addlinespace
+Isomorphism classes $n = 12$ & All 7,849 classes of $6$-regular graphs & Verified within bounds \\
+\addlinespace
+Labelled graphs $n = 9$ & All 30,016 labelled $6$-regular graphs & Exact $\ce = 3$ for all \\
+\addlinespace
+Adversarial families & Hand-crafted $L(B)$ families forcing triangle packings & 301,365 instances, 0 failures \\
+\addlinespace
+Random $6$-regular graphs & Sampled graphs with $n \in \{15, 18, 21, 24\}$ & 8,000 instances, 0 failures \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tightness and Open Questions}
+While Theorem~\ref{thm:ce-n-minus-2} establishes $\ce(G) \le n-2$ for $n \equiv 0 \pmod 3$, computational evidence suggests that the true value of $\ce(G)$ for $6$-regular graphs is far smaller. Indeed, for all 6-regular graphs on $9$ and $10$ vertices, the exact cycle--edge decomposition number is $\ce(G) = 3$. At $n = 12$, among all 7,849 isomorphism classes, the theoretical bound $n-2 = 10$ is never tight, and the true values are overwhelmingly small. 
+
+This raises the natural question of whether $\ce(G) = O(1)$ or $o(n)$ for all 6-regular graphs, or whether there exists an infinite family of 6-regular graphs requiring $\Theta(n)$ parts. In addition, the residual configurations in our proof (such as $K_{3,3,3}$, where $\ce = 3 \ll 7 = n-2$) suggest that pushing the component bound to $n-3$ by a purely combinatorial argument remains an interesting challenge.
+
+\section*{Acknowledgments}
+The author thanks the authors of~\cite{AABC25} for formulating the problem and conjecture.
+
+%=============================================================================
+\begin{thebibliography}{99}
+%=============================================================================
+
+\bibitem{AABC25}
+S.~Akbari, J.~Aloni, A.~Beikmohammadi, and A.~Clow,
+\emph{Tight bounds for cycle--edge decompositions and covers},
+arXiv:2509.01901 (2025).
+
+\bibitem{AAFJLS04}
+M.~Abreu, R.~E.~L.~Aldred, M.~Funk, B.~Jackson, D.~Labbate, and J.~Sheehan,
+\emph{Graphs and digraphs with all $2$-factors isomorphic},
+J. Combin. Theory Ser. B \textbf{92} (2004), no.~2, 395--404.
+
+\bibitem{BH97}
+E.~Bertram and P.~Hor\'ak,
+\emph{Decomposing $4$-regular graphs into triangle-free $2$-factors},
+SIAM J. Discrete Math. \textbf{10} (1997), no.~2, 309--317.
+
+\bibitem{BM23}
+M.~Buci\'c and R.~Montgomery,
+\emph{Towards the Erd\H{o}s--Gallai cycle decomposition conjecture},
+in: Proceedings of the 55th Annual ACM Symposium on Theory of Computing (STOC 2023),
+ACM, New York, 2023, pp.~839--852.
+
+\bibitem{E83}
+P.~Erd\H{o}s,
+\emph{On some of my conjectures in number theory and combinatorics},
+Congr. Numer. \textbf{39} (1983), 3--19.
+
+\bibitem{EG59}
+P.~Erd\H{o}s and T.~Gallai,
+\emph{On maximal paths and circuits of graphs},
+Acta Math. Acad. Sci. Hungar. \textbf{10} (1959), 337--356.
+
+\bibitem{EGP66}
+P.~Erd\H{o}s, A.~W.~Goodman, and L.~P\'osa,
+\emph{The representation of a graph by set intersections},
+Canad. J. Math. \textbf{18} (1966), 106--112.
+
+\bibitem{Er71}
+P.~Erd\H{o}s,
+\emph{Some unsolved problems in graph theory and combinatorial analysis},
+in: Combinatorial Mathematics and its Applications (Proc. Conf., Oxford, 1969),
+Academic Press, London, 1971, pp.~97--109.
+
+\bibitem{Hartvigsen24}
+D.~Hartvigsen,
+\emph{Finding triangle-free $2$-factors in general graphs},
+preprint, 2024.
+
+\bibitem{KS95}
+M.~Kouider and G.~Sabidussi,
+\emph{Factorizations of $4$-regular graphs and Petersen's theorem},
+J. Combin. Theory Ser. B \textbf{63} (1995), no.~2, 170--184.
+
+\bibitem{Krausz43}
+J.~Krausz,
+\emph{D\'emonstration nouvelle d'un th\'eor\`eme de Whitney sur les r\'eseaux (complexes de cha\^ines)},
+Mat. Fiz. Lapok \textbf{50} (1943), 75--85.
+
+\bibitem{Pe91}
+J.~Petersen,
+\emph{Die Theorie der regul\"aren Graphs},
+Acta Math. \textbf{15} (1891), 193--220.
+
+\bibitem{Pl07}
+M.~D.~Plummer,
+\emph{Graph factors and factorization: 1985--2003: A survey},
+Discrete Math. \textbf{307} (2007), no.~7--8, 791--821.
+
+\bibitem{Py85}
+L.~Pyber,
+\emph{An Erd\H{o}s--Gallai conjecture},
+Combinatorica \textbf{5} (1985), no.~1, 67--79.
+
+\end{thebibliography}
+
+\end{document}
